@@ -1,0 +1,30 @@
+#Game {
+    width: 100vw;
+    height: 100vh;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+body {
+    overflow: hidden;
+}
+
+.box {
+    background-color: white;
+    border: 2px solid #999;
+    border-radius: 15px;
+    padding: 10px;
+    overflow: hidden;
+    float: left;
+}
+
+hr {
+    background-color: black;
+    margin: 5px 0px;
+}
+.light {
+    background-color: gray;
+    margin: 1px 0px;
+}
