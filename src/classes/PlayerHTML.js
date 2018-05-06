@@ -79,6 +79,11 @@ export default class PlayerHTML extends React.Component {
             <span id="actions">
                 <span>move: {this.state.player.moves.move} | main: {this.state.player.moves.main} | sub: {this.state.player.moves.sub}</span><br />
                 <hr className="light"/>
+                {
+                    Object.keys(this.state.player.actions).map((name) => {
+                        return <span key={name}> - {name} | <br /></span>;
+                    })
+                }
             </span>
         );
     }

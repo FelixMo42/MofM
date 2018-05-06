@@ -3,6 +3,7 @@ import MapHTML from './MapHTML';
 
 import Tile from "./Tile";
 import Player from "./Player";
+import Action from "./Action";
 
 var x;
 var y;
@@ -28,9 +29,9 @@ export default class Map {
         }
 
         for (x = 0; x < this.width; x++) {
-            this.tiles[x] = {}
+            this[x] = {}
             for (y = 0; y < this.height; y++) {
-                this.tiles[x][y] = new Tile();
+                this[x][y] = new Tile();
             }
         }
 
@@ -38,19 +39,27 @@ export default class Map {
             var good = this.addPlayer(new Player({x: 0, y: 9}));
             var bad = this.addPlayer(new Player({x: 9, y: 0}));
 
-            good.name = "Felix Moses";
+            var punch = new Action({name: "punch"});
+            var block = new Action({name: "block"});
 
-            bad.color = "#FF0000";
-            bad.name = "Vladimir Putin";
+            setInterval( () => {
+                good.name = "Felix Moses";
+                good.learn(punch);
+                good.learn(block);
+
+                bad.color = "#FF0000";
+                bad.name = "Vladimir Putin";
+                bad.learn(punch);
+            }, 1000);
         /* end set up */
 
         this.html = <MapHTML map={this}/>;
     }
 
     addPlayer(player) {
-        player.tile = this.tiles[player.x][player.y];
+        player.tile = this[player.x][player.y];
         player.map = this;
-        this.tiles[player.x][player.y].player = player;
+        this[player.x][player.y].player = player;
         this.players.push(player);
         return player;
     }
@@ -62,14 +71,14 @@ export default class Map {
     draw(ctx) {
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                this.tiles[x][y].draw(ctx, x, y, 60);
+                this[x][y].draw(ctx, x, y, 60);
             }
         }
 
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                if (this.tiles[x][y].player) {
-                    this.tiles[x][y].player.draw(ctx, x, y, 60);
+                if (this[x][y].player) {
+                    this[x][y].player.draw(ctx, x, y, 60);
                 }
             }
         }

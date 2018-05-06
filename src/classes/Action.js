@@ -4,7 +4,7 @@ const styles = {
             return true; // TODO
         },
         do: (map, comp, x, y) => {
-            map.tiles[x][y].affect(comp.effect);
+            map[x][y].affect(comp.effect);
         }
     },
     line: {
@@ -12,7 +12,7 @@ const styles = {
             return true; // TODO
         },
         do: (map, comp, x, y) => {
-            map.tiles[x][y].affect(comp.effect);
+            map[x][y].affect(comp.effect);
         }
     }
 }
@@ -31,15 +31,9 @@ export default class Action {
     constructor(params) {
         if (params) {
             Object.keys(params).map((key) => {
-                this[key] = params[key]
+                return (this[key] = params[key]);
             });
         }
-
-
-        this.addComponent({
-            style: "ball"
-        })
-        this.do(9,0);
     }
 
     addComponent(obj) {

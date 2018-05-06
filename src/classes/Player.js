@@ -3,8 +3,6 @@ import PlayerHTML from './PlayerHTML';
 
 import GlobKey from '../util/GlobKey';
 
-import Action from './Action';
-
 export default class Player {
     name = "def";
 
@@ -58,13 +56,21 @@ export default class Player {
         ctx.fill();
     }
 
+    learn(action) {
+        action = Object.assign( Object.create( Object.getPrototypeOf(action)), action);
+        action.player = this;
+        this.actions[action.name] = action;
+        this.update();
+    }
+
     pos(x, y) {
+        if (this.map[x][y].player) {
+            return false;
+        }
         this.tile.player = false;
         this.x = x;
         this.y = y;
-        this.tile = this.map.tiles[x][y];
+        this.tile = this.map[x][y];
         this.tile.player = this;
-
-        new Action({player: this});
     }
 }
