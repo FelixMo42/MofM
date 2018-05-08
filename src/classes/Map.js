@@ -17,7 +17,7 @@ export default class Map {
     tiles = {};
     players = [];
 
-    turn = 0;
+    turn = -1;
 
     /* functions */
 
@@ -31,7 +31,7 @@ export default class Map {
         for (x = 0; x < this.width; x++) {
             this[x] = {}
             for (y = 0; y < this.height; y++) {
-                this[x][y] = new Tile();
+                this[x][y] = new Tile({x: x, y: y});
             }
         }
 
@@ -41,19 +41,38 @@ export default class Map {
 
             var punch = new Action({name: "punch"});
             var block = new Action({name: "block"});
+            var move = new Action({name: "move"});
+            move.addComponent({
+                target: "self",
+                func: function(tile, effect, x, y) {
+                    // TODO: pathfinding
+                }
+            })
 
-            setInterval( () => {
+            setTimeout( () => {
                 good.name = "Felix Moses";
                 good.learn(punch);
                 good.learn(block);
+                good.learn(move);
 
                 bad.color = "#FF0000";
                 bad.name = "Vladimir Putin";
                 bad.learn(punch);
+
+                this.nextTurn();
             }, 1000);
         /* end set up */
 
         this.html = <MapHTML map={this}/>;
+    }
+
+    nextTurn() {
+        this.turn++;
+        if (this.turn === this.players.length) {
+            this.turn = 0;
+        }
+        this.player = this.players[this.turn];
+        this.action = this.player.actions.move;
     }
 
     addPlayer(player) {
@@ -65,7 +84,11 @@ export default class Map {
     }
 
     onMouseDown(x, y) {
-        this.players[this.turn].pos(x, y);
+        if (this.action.do(x, y)) {
+            // succses
+        } else {
+            // failed
+        }
     }
 
     draw(ctx) {

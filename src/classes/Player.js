@@ -46,6 +46,7 @@ export default class Player {
             });
         }
 
+        this.update = () => {};
         this.html = <PlayerHTML player={this} key={GlobKey.getNewKey()}/>;
     }
 
@@ -72,5 +73,19 @@ export default class Player {
         this.y = y;
         this.tile = this.map[x][y];
         this.tile.player = this;
+    }
+
+    move(x, y) {
+        this.pos(this.x + x, this.y + y);
+    }
+
+    HP(hp) {
+        this.hp += hp;
+        this.update();
+    }
+
+    MP(mp) {
+        this.mp += mp;
+        this.update();
     }
 }

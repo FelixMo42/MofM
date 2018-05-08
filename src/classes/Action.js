@@ -1,18 +1,18 @@
 const styles = {
     ball: {
-        cheak: (map, comp, x, y) => {
+        cheak: (obj, comp, x, y) => {
             return true; // TODO
         },
-        do: (map, comp, x, y) => {
-            map[x][y].affect(comp.effect);
+        do: (obj, comp, x, y) => {
+            obj.affect(comp, x, y);
         }
     },
     line: {
-        cheak: (map, comp, x, y) => {
+        cheak: (obj, comp, x, y) => {
             return true; // TODO
         },
-        do: (map, comp, x, y) => {
-            map[x][y].affect(comp.effect);
+        do: (obj, comp, x, y) => {
+            obj.affect(comp, x, y);
         }
     }
 }
@@ -39,6 +39,14 @@ export default class Action {
     addComponent(obj) {
         if (!obj.style) { obj.style = "ball"; }
         this.components.push(obj);
+    }
+
+    effect(affect, x, y) {
+        if (affect.target === "self") {
+            this.player.tile.effect(affect);
+        } else {
+            this.player.map[x][y].effect(affect);
+        }
     }
 
     cheak(x, y) {

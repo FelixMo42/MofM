@@ -19,6 +19,19 @@ export default class Tile {
     }
 
     affect(effect) {
-        
+        if (effect.func) {
+            effect.func(this, effect, this.x, this.y);
+        }
+        if (this.player && effect.player) {
+            if (effect.player.hp) {
+                this.player.HP(effect.player.hp);
+            }
+            if (effect.player.mp) {
+                this.player.MP(effect.player.mp);
+            }
+            if (effect.player.x || effect.player.y) {
+                this.player.move(effect.player.x | 0, effect.player.y | 0);
+            }
+        }
     }
 }
