@@ -16,12 +16,16 @@ export default class Game extends React.Component {
         this.world.draw(this.graphics);
     }
 
-    update() {
-
+    onMouseDown(e) {
+        this.world.onMouseDown(Math.floor(e.clientX/this.graphics.size), Math.floor(e.clientY/this.graphics.size));
     }
 
-    onMouseDown(e) {
-        this.world.onMouseDown(Math.floor(e.clientX/60), Math.floor(e.clientY/60));
+    onMouseMoved(e) {
+        this.world.onMouseMoved(Math.floor(e.clientX/this.graphics.size), Math.floor(e.clientY/this.graphics.size));
+    }
+
+    onKeyPress(e) {
+        this.world.onKeyPress(e.key);
     }
 
     resize() {
@@ -29,6 +33,7 @@ export default class Game extends React.Component {
         this.canvas.height = window.innerHeight * devicePixelRatio;
 
         this.graphics.lineWidth = 2;
+        this.graphics.size = 56;
     }
 
     componentDidMount() {
@@ -43,7 +48,6 @@ export default class Game extends React.Component {
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.resize.bind(this));
-
         this.clearInterval(this.drawLoop);
     }
 
@@ -53,7 +57,10 @@ export default class Game extends React.Component {
                 <canvas
                     id="Game"
                     ref="canvas"
+                    tabIndex='1'
                     onClick={(e) => {this.onMouseDown(e)}}
+                    onMouseMove={(e) => {this.onMouseMoved(e)}}
+                    onKeyPress={(e) => {this.onKeyPress(e)}}
                 />
                 { this.world.html }
             </div>

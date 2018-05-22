@@ -5,6 +5,8 @@ import Tile from "./Tile";
 import Player from "./Player";
 import Action from "./Action";
 
+import Path from "../util/Path"
+
 var x;
 var y;
 
@@ -19,6 +21,8 @@ export default class Map {
 
     turn = -1;
 
+    info = [];
+
     /* functions */
 
     constructor(params) {
@@ -31,7 +35,7 @@ export default class Map {
         for (x = 0; x < this.width; x++) {
             this[x] = {}
             for (y = 0; y < this.height; y++) {
-                this[x][y] = new Tile({x: x, y: y});
+                this[x][y] = new Tile({x: x, y: y, map: this});
             }
         }
 
@@ -39,26 +43,81 @@ export default class Map {
             var good = this.addPlayer(new Player({x: 0, y: 9}));
             var bad = this.addPlayer(new Player({x: 9, y: 0}));
 
-            var punch = new Action({name: "punch"});
-            var block = new Action({name: "block"});
-            var move = new Action({name: "move"});
-            move.addComponent({
-                target: "self",
-                func: function(tile, effect, x, y) {
-                    // TODO: pathfinding
+            var punch = new Action({
+                name: "punch",
+                moves: {main: 1},
+                skill: "hand-to-hand"
+            });
+            punch.addComponent({
+                range: 1,
+                target: "player",
+                player: {
+                    hp: -10,
                 }
-            })
+            });
+
+            var block = new Action({
+                name: "block",
+                skill: "defence"
+            });
+
+            var move = new Action({name: "move",
+                ui: (ctx, x, y) => {
+                    ctx.strokeStyle = "#FFFFFF";
+                    ctx.beginPath();
+                    ctx.arc( (x + .5) * ctx.size, (y + .5) * ctx.size, ctx.size / 2, 0, 2 * Math.PI );
+                    ctx.stroke();
+                },
+                cheak: (x, y, data) => {
+                    data.path = Path.find(this.player.tile.map, this.player.x, this.player.y, x, y).slice(0, data.player.moves.move);
+                    return (data.path[0] !== undefined);
+                },
+                draw: (data, x, y, player, action) => {
+                    if (data.i === undefined) {
+                        data.i = 0;
+                        data.rate = 5;
+                    }
+
+                    data.i += 1000 / 40;
+
+                    if (data.i >= (1000 / data.rate)) {
+                        this.player.update();
+                        data.i -= 1000 / data.rate;
+                        player.Gpos(data.path[0].x, data.path[0].y);
+                        data.path.shift();
+                    }
+
+                    return !data.path[0];
+                }
+            });
+            move.addComponent({
+                style: "click",
+                target: "self",
+                func: (tile, effect, x, y, data) => {
+                    data.player.tile.graphics.player = data.player;
+                    data.player.pos(data.path[data.path.length - 1].x, data.path[data.path.length - 1].y);
+                    data.player.moves.move -= data.path.length;
+                    data.player.tile.graphics.player = false;
+                }
+            });
 
             setTimeout( () => {
                 good.name = "Felix Moses";
+                good.learn(move);
                 good.learn(punch);
                 good.learn(block);
-                good.learn(move);
+                good.controller = "player";
 
-                bad.color = "#FF0000";
                 bad.name = "Vladimir Putin";
+                bad.color = "#AA5555";
+                bad.learn(move);
                 bad.learn(punch);
+                bad.controller = (player) => {
+                    player.actions.move.do(good.x + 1, good.y - 1);
+                    player.actions.punch.do(good.x, good.y);
+                };
 
+                this.player = bad;
                 this.nextTurn();
             }, 1000);
         /* end set up */
@@ -67,42 +126,111 @@ export default class Map {
     }
 
     nextTurn() {
+        this.player.turn = false;
+        this.player.update();
+
         this.turn++;
-        if (this.turn === this.players.length) {
+        if (this.turn >= this.players.length) {
             this.turn = 0;
         }
+
         this.player = this.players[this.turn];
-        this.action = this.player.actions.move;
+
+        if (this.player.controller === "player") {
+            this.action = this.player.actions.move;
+        } else {
+            this.player.controller(this.player);
+            this.player.stack.push(() => {
+                this.nextTurn();
+                return true;
+            });
+        }
+
+        this.player.nextTurn();
+        this.player.turn = true;
+        this.player.update();
     }
 
     addPlayer(player) {
         player.tile = this[player.x][player.y];
+        player.graphics.tile = this[player.x][player.y];
         player.map = this;
         this[player.x][player.y].player = player;
         this.players.push(player);
         return player;
     }
 
-    onMouseDown(x, y) {
-        if (this.action.do(x, y)) {
-            // succses
-        } else {
-            // failed
+    removePlayer(player) {
+        var index = this.players.indexOf(player);
+        if (index !== -1) {
+            this.players.splice(index, 1);
+            player.graphics.tile.graphics.player = undefined;
+            delete player.tile.player;
+            this.nextTurn();
         }
+    }
+
+    onMouseDown(x, y) {
+        if (this.player.controller !== "player" || this.player.stack.length !== 0) { return; }
+
+        if (this.action.do(x, y)) {
+            this.player.stack.push(() => {
+                for (var t in this.player.moves) {
+                    if (this.player.moves[t] !== 0) {
+                        return true;
+                    }
+                }
+                this.nextTurn();
+                return true;
+            });
+        }
+    }
+
+    onMouseMoved(x, y) {
+        this.mouseX = x;
+        this.mouseY = y;
+    }
+
+    onKeyPress(key) {
+        if (key === "Enter") {
+            this.player.stack.push(() => {
+                this.nextTurn();
+                return true;
+            });
+        }
+    }
+
+    tag(text, tile) {
+        this.info.push({text: text, x: tile.x, y: tile.y});
     }
 
     draw(ctx) {
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                this[x][y].draw(ctx, x, y, 60);
+                this[x][y].draw(ctx, x, y);
             }
         }
 
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                if (this[x][y].player) {
-                    this[x][y].player.draw(ctx, x, y, 60);
+                if (this[x][y].graphics.player) {
+                    this[x][y].graphics.player.draw(ctx, x, y);
                 }
+            }
+        }
+
+        if (this.player && this.player.controller === "player") {
+            this.action.ui(ctx, this.mouseX, this.mouseY);
+        }
+
+        for (var i = 0; i < this.info.length; i++) {
+            ctx.fillText(this.info[i].text, this.info[i].x * ctx.size, this.info[i].y * ctx.size);
+
+            this.info[i].y -= 1000/40 * 2;
+            this.info[i].count += 1000/40;
+            if (this.info[i].count > 1000) {
+                this.info.splice(i, 1);
+                i--;
             }
         }
     }

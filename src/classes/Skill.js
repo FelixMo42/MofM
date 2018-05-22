@@ -14,4 +14,14 @@ export default class Skill {
             });
         }
     }
+
+    value(base, stat) {
+        if (base) {
+            return base + Math.sign(base) * this.level
+        } else if (stat) {
+            return base + Math.sign(base) * (this.level + this.player.stats[stat.toLowerCase()]);
+        } else {
+            return this.level;
+        }
+    }
 }
