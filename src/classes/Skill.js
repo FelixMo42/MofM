@@ -24,4 +24,8 @@ export default class Skill {
             return this.level;
         }
     }
+
+    roll(stat) {
+        return this.value(Math.floor(Math.random() * 20 + 1), stat);
+    }
 }

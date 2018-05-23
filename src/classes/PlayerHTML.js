@@ -93,7 +93,7 @@ export default class PlayerHTML extends React.Component {
                 <hr className="light"/>
                 { Object.keys(this.player.actions).map((name) =>
                     <span key={name}> {this.player.turn && this.player.controller === "player" ?
-                        <input type="checkbox" checked={this.player.tile.map.action.name === name} onChange={() => {this.player.tile.map.action = this.player.actions[name];this.player.update();}} />
+                        <input type="checkbox" checked={this.player.tile.map.action.name === name} onChange={() => {this.player.tile.map.setAction( this.player.actions[name] );}} />
                     : "-"} {name} | <br /></span>
                 ) }
             </span>

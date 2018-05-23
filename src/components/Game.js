@@ -34,6 +34,8 @@ export default class Game extends React.Component {
 
         this.graphics.lineWidth = 2;
         this.graphics.size = 56;
+        this.graphics.font = "16px Arial";
+        this.graphics.textAlign = "center";
     }
 
     componentDidMount() {

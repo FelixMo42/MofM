@@ -27,7 +27,7 @@ export default class Tile extends Graphics {
             effect.func(this, effect, x, y, data);
         }
         if (this.player && effect.player) {
-            var aim = this.player.skills[effect.skill].value( Math.floor(Math.random() * 20 + 1), "dex");
+            var aim = this.player.skills[effect.skill].roll("dex");
             if (effect.player.hp) {
                 this.player.HP(this.player.skills[effect.skill].value(effect.player.hp, "str"), aim);
             }

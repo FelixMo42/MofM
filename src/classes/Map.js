@@ -1,11 +1,11 @@
 import React from 'react';
 import MapHTML from './MapHTML';
 
+import Path from "../util/Path"
+
 import Tile from "./Tile";
 import Player from "./Player";
 import Action from "./Action";
-
-import Path from "../util/Path"
 
 var x;
 var y;
@@ -58,7 +58,9 @@ export default class Map {
 
             var block = new Action({
                 name: "block",
-                skill: "defence"
+                skill: "defence",
+                moves: {main: 1},
+                ui: "instant"
             });
 
             var move = new Action({name: "move",
@@ -200,8 +202,8 @@ export default class Map {
         }
     }
 
-    tag(text, tile) {
-        this.info.push({text: text, x: tile.x, y: tile.y});
+    tag(text, color, tile) {
+        this.info.push({text: text, color: color, x: tile.x + .5, y: tile.y, count: 0});
     }
 
     draw(ctx) {
@@ -224,14 +226,26 @@ export default class Map {
         }
 
         for (var i = 0; i < this.info.length; i++) {
+            ctx.strokeStyle = "black";
+            ctx.strokeText(this.info[i].text, this.info[i].x * ctx.size, this.info[i].y * ctx.size);
+            ctx.fillStyle = this.info[i].color;
             ctx.fillText(this.info[i].text, this.info[i].x * ctx.size, this.info[i].y * ctx.size);
 
-            this.info[i].y -= 1000/40 * 2;
-            this.info[i].count += 1000/40;
-            if (this.info[i].count > 1000) {
+            this.info[i].y -= 1 / 40  * 2;
+            this.info[i].count += 1 / 40;
+            if (this.info[i].count > 1) {
                 this.info.splice(i, 1);
                 i--;
             }
         }
+    }
+
+    setAction(action) {
+        if (action.ui === "instant") {
+            action.do(action.player.tile.x, action.player.tile.y);
+        } else {
+            this.action = action;
+        }
+        action.player.update();
     }
 }

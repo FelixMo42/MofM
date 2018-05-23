@@ -57,7 +57,7 @@ const styles = {
     },
     click: {
         cheak: (obj, comp, x, y) => {
-            return true; // TODO
+            return true;
         },
         do: (obj, comp, x, y, data) => {
             obj.affect(comp, x, y, data);
