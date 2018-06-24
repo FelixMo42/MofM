@@ -33,9 +33,17 @@ export default class Player extends Graphics {
     mpRegen = 0;
 
     gp = 0;
-    equipment = {};
+    gear = [];
+    slots = {
+        hands: 2,
+        chest: 1,
+        head: 1,
+        legs: 1,
+        feet: 1
+    };
 
-    bonuses = {};
+    increases = {};
+    bonuses = [];
 
     /* graphics */
 
@@ -47,6 +55,9 @@ export default class Player extends Graphics {
     constructor(params) {
         super(params);
 
+        this.update = () => {};
+        this.html = <PlayerHTML player={this} key={GlobKey.getNewKey()}/>;
+
         if (params) {
             Object.keys(params).map((key) => {
                 return (this[key] = params[key]);
@@ -55,9 +66,6 @@ export default class Player extends Graphics {
 
         this.learn(new Skill({name: "dodge"}));
         this.learn(new Skill({name: "defence"}));
-
-        this.update = () => {};
-        this.html = <PlayerHTML player={this} key={GlobKey.getNewKey()}/>;
     }
 
     draw(ctx, x, y) {
@@ -77,16 +85,17 @@ export default class Player extends Graphics {
     learn(action) {
         if (action instanceof Action) {
             if (action.skill && !this.skills[action.skill]) {
+                console.log(action.skill)
                 this.skills[action.skill] = new Skill({name: action.skill, player: this});
             }
             action = Object.assign( Object.create( Object.getPrototypeOf(action)), action);
             action.player = this;
             this.actions[action.name] = action;
-            this.update();
         } else if (action instanceof Skill) {
             action.player = this;
             this.skills[action.name] = action;
         }
+        this.update();
     }
 
     pos(x, y) {
@@ -166,11 +175,52 @@ export default class Player extends Graphics {
         this.tile.map.removePlayer(this);
     }
 
+    bonus(b) {
+        if (!b.timer) {
+            b.timer = 0;
+        }
+        if (b.name) {
+            if (this.increases[b.name]) {
+                this.increases[b.name] += b.value;
+            } else {
+                this.increases[b.name] = b.value;
+            }
+        }
+        if (b.action) {
+            if (!this.actions[b.action.name]) {
+                this.learn(b.action);
+            }
+        }
+        this.bonuses.push(b);
+        this.update();
+    }
+
     nextTurn() {
         this.moves = {
             move: 5,
             main: 1,
             sub: 2
         };
+
+        for (var i = 0; i < this.bonuses.length; i++) {
+            this.bonuses[i].timer--;
+            if (this.bonuses[i].timer < 0) {
+                if (this.bonuses[i].name) {
+                    this.increases[this.bonuses[i].name] -= this.bonuses[i].value;
+                }
+                this.bonuses.splice(i, 1);
+                i--;
+            }
+        }
+    }
+
+    equip(item) {
+        if (item.slot && this.slots[item.slot]) {
+            this.gear[item.slot] = item;
+            if (item.action) {
+                this.bonus({action: item.action});
+            }
+        }
+        this.update()
     }
 }

@@ -74,8 +74,9 @@ export default class Action {
     skill = "";
 
     moves = {};
-
     components = [];
+
+    show = true;
 
     /* functions */
 
@@ -107,6 +108,8 @@ export default class Action {
                 return false;
             }
         }
+
+        if (this.ui === "instant") { return true; }
 
         for (var i = 0; i < this.components.length; i++) {
             if ( !styles[this.components[i].style].cheak(this, this.components[i], x, y) ) {

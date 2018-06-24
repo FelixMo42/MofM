@@ -26,8 +26,8 @@ export default class Tile extends Graphics {
         if (effect.func) {
             effect.func(this, effect, x, y, data);
         }
-        if (this.player && effect.player) {
-            var aim = this.player.skills[effect.skill].roll("dex");
+        if (effect.player && this.player) {
+            var aim = effect.player.skills[effect.skill].roll("dex");
             if (effect.player.hp) {
                 this.player.HP(this.player.skills[effect.skill].value(effect.player.hp, "str"), aim);
             }
@@ -37,11 +37,27 @@ export default class Tile extends Graphics {
             if (effect.player.x || effect.player.y) {
                 this.player.move(effect.player.x | 0, effect.player.y | 0);
             }
+            if (effect.player.bonuses) {
+                effect.player.bonuses.forEach( (b) => {
+                    this.player.bonus( Object.assign({}, b) );
+                } );
+            }
+        }
+        if (effect.item && this.item) {
+            if (effect.item.pickup) {
+                this.item.pickup(data.player)
+            }
         }
     }
 
     walkable() {
         if ( this.player ) {
+            return false;
+        }
+        if ( this.structor && !this.structor.walkable ) {
+            return false;
+        }
+        if ( this.item && !this.item.walkable ) {
             return false;
         }
         return true;

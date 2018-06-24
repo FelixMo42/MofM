@@ -4,8 +4,10 @@ import MapHTML from './MapHTML';
 import Path from "../util/Path"
 
 import Tile from "./Tile";
+import Structor from "./Structor";
 import Player from "./Player";
 import Action from "./Action";
+import Item from "./Item";
 
 var x;
 var y;
@@ -40,8 +42,17 @@ export default class Map {
         }
 
         /* set up */
-            var good = this.addPlayer(new Player({x: 0, y: 9}));
-            var bad = this.addPlayer(new Player({x: 9, y: 0}));
+            var pickup = new Action({
+                name: "pick up",
+                moves: {sub: 1}
+            })
+            pickup.addComponent({
+                range: 1,
+                target: "item",
+                item: {
+                    pickup: true
+                }
+            })
 
             var punch = new Action({
                 name: "punch",
@@ -56,11 +67,31 @@ export default class Map {
                 }
             });
 
+            var hit = new Action({
+                name: "hit",
+                moves: {main: 1},
+                skill: "chair-to-head"
+            });
+            hit.addComponent({
+                range: 1,
+                target: "player",
+                player: {
+                    hp: -20,
+                }
+            });
+
             var block = new Action({
                 name: "block",
                 skill: "defence",
                 moves: {main: 1},
                 ui: "instant"
+            });
+            block.addComponent({
+                player: {
+                    bonuses: [
+                        {timer: 1, name: "defence", value: 5}
+                    ]
+                }
             });
 
             var move = new Action({name: "move",
@@ -103,22 +134,44 @@ export default class Map {
                 }
             });
 
+            var good = this.addPlayer(new Player({x: 0, y: 9}));
+            good.name = "Uncle Sam";
+            good.learn(move);
+            good.learn(punch);
+            good.learn(block);
+            good.learn(pickup);
+            good.controller = "player";
+
+            var bad = this.addPlayer(new Player({x: 9, y: 0}));
+            bad.name = "Vladimir Putin";
+            bad.color = "#FF5555";
+            bad.learn(move);
+            bad.learn(punch);
+            bad.controller = (player) => {
+                player.actions.move.do(good.x, good.y);
+                player.actions.punch.do(good.x, good.y);
+            };
+
+            this.setStructor(new Structor(), 2, 2);
+            this.setStructor(new Structor(), 2, 3);
+            this.setStructor(new Structor(), 3, 2);
+
+            this.setStructor(new Structor(), 2, 7);
+            this.setStructor(new Structor(), 2, 6);
+            this.setStructor(new Structor(), 3, 7);
+
+            this.setStructor(new Structor(), 7, 7);
+            this.setStructor(new Structor(), 7, 6);
+            this.setStructor(new Structor(), 6, 7);
+
+            this.setStructor(new Structor(), 7, 2);
+            this.setStructor(new Structor(), 7, 3);
+            this.setStructor(new Structor(), 6, 2);
+
+
+            this.setItem(new Item({name: "chair", slot: "hands", action: hit}), 1, 9)
+
             setTimeout( () => {
-                good.name = "Felix Moses";
-                good.learn(move);
-                good.learn(punch);
-                good.learn(block);
-                good.controller = "player";
-
-                bad.name = "Vladimir Putin";
-                bad.color = "#AA5555";
-                bad.learn(move);
-                bad.learn(punch);
-                bad.controller = (player) => {
-                    player.actions.move.do(good.x + 1, good.y - 1);
-                    player.actions.punch.do(good.x, good.y);
-                };
-
                 this.player = bad;
                 this.nextTurn();
             }, 1000);
@@ -151,6 +204,15 @@ export default class Map {
         this.player.nextTurn();
         this.player.turn = true;
         this.player.update();
+    }
+
+    setStructor(structor, x, y, width = 1, height = 1) {
+        this[x][y].structor = structor
+    }
+
+    setItem(item, x, y, width = 1, height = 1) {
+        item.tile = this[x][y];
+        this[x][y].item = item;
     }
 
     addPlayer(player) {
@@ -215,6 +277,12 @@ export default class Map {
 
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
+                if (this[x][y].graphics.structor) {
+                    this[x][y].graphics.structor.draw(ctx, x, y);
+                }
+                if (this[x][y].graphics.item) {
+                    this[x][y].graphics.item.draw(ctx, x, y);
+                }
                 if (this[x][y].graphics.player) {
                     this[x][y].graphics.player.draw(ctx, x, y);
                 }

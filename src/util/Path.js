@@ -29,11 +29,7 @@ function find(map, sx, sy, ex, ey, mode) {
 
         if (get(closed , ex , ey)) { break; }
 
-        var n = neighbours(map, open, closed, current, ex, ey, mode);
-
-        for (var i in n) {
-            add(open, n[i]);
-        }
+        addNeighbours(map, open, closed, current, ex, ey, mode);
     }
 
     return calc(map, open, closed, sx, sy, ex, ey, mode);
@@ -81,15 +77,15 @@ function remove(l, x, y) {
 	delete l[x + "_" + y];
 }
 
-function neighbours(map, o, c, node, ex, ey, mode) {
+function addNeighbours(map, o, c, node, ex, ey, mode) {
     var n = [];
     var f = node.s + 10;
 
     for (var x = node.x - 1; x <= node.x + 1; x++) {
         for (var y = node.y - 1; y <= node.y + 1; y++) {
-            if ((x !== node.x || y !== node.y) && open(map, x, y, mode) && !get(c, x, y)) {
+            if ((x !== node.x || y !== node.y) && !get(c, x, y)) {
                 var d = dist(x,y , ex,ey);
-                n.push({
+                add(open(map, x, y, mode) && o || c, {
                     x: x, y: y,
                     s: f,
                     d: d,
@@ -103,14 +99,18 @@ function neighbours(map, o, c, node, ex, ey, mode) {
     return n;
 }
 
-function calc(map, open, closed, sx, sy, ex, ey, mode) {
-    if (!get(closed, ex, ey)) { return []; }
-    var path = [ get(closed, ex, ey) ];
+function calc(map, o, c, sx, sy, ex, ey, mode) {
+    if (!get(c, ex, ey)) { return []; }
+    var path = [ get(c, ex, ey) ];
     while (path[path.length - 1].p) {
         path.push( path[path.length - 1].p )
     }
 
-    path.reverse().shift()
+    path.reverse().shift();
+
+    if (!open(map, ex, ey, mode)) {
+        path.pop();
+    }
 
     return path;
 }

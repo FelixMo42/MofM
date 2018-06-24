@@ -4,12 +4,16 @@ import Draggable from 'react-draggable';
 export default class PlayerHTML extends React.Component {
     constructor(params) {
         super(params);
+
         this.state = {open: true, window: "info", update: false};
         this.player = params.player;
+        this.slots = {};
 
-        this.player.update = () => {
+        this.update = () => {
             this.setState({update: true});
         }
+
+        this.player.update = this.update;
     }
 
     render() {
@@ -70,8 +74,51 @@ export default class PlayerHTML extends React.Component {
     }
 
     renderGear() {
+        this.player.gear.map((gear, index) => {
+            if (gear.slot) {
+                if (!this.slots[gear.slot]) {
+                    this.slots[gear.slot] = [];
+                    this.slots[gear.slot].open = true
+                }
+            } else if (gear.use) {
+                if (!this.slots.useable) {
+                    this.slots.useable = [];
+                    this.slots.useable.open = true
+                }
+            } else {
+                if (!this.slots.outher) {
+                    this.slots.outher = [];
+                    this.slots.outher.open = true
+                }
+                this.slots.outher.push(gear);
+            }
+        });
         return (
             <span id="gear">
+                { Object.keys(this.slots).map((slot) => {
+                    if (this.slots[slot].open) {
+                        return (
+                            <span>
+                                <span onClick={() => {this.slots[slot].open = false; this.update()}}> V {slot} </span> <br />
+                                {
+                                    this.player.gear.map((gear, index) =>
+                                        <span>
+                                            {( this.player.turn && this.player.controller === "player") ?
+                                                <input type="checkbox" checked={this.player.gear[slot] === gear} onChange={() => {this.player.equip(gear)}}/>
+                                            : "-" } {gear.name}<br />
+                                        </span>
+                                    )
+                                }
+                            </span>
+                        );
+                    } else {
+                        return (
+                            <span onClick={() => {this.slots[slot].open = true; this.update()}}>
+                                > {slot}
+                            </span>
+                        );
+                    }
+                }) }
             </span>
         );
     }
@@ -80,7 +127,9 @@ export default class PlayerHTML extends React.Component {
         return (
             <span id="skills">
                 { Object.keys(this.player.skills).map((name) =>
-                    <span key={name}>- {name} | level: {this.player.skills[name].level}<br /></span>
+                    <span key={name}>- {name} | level: {this.player.skills[name].level}{
+                        this.player.skills[name].bonus() !== 0 && " +" + this.player.skills[name].bonus()
+                    }<br /></span>
                 ) }
             </span>
         );
@@ -91,6 +140,10 @@ export default class PlayerHTML extends React.Component {
             <span id="actions">
                 <span>move: {this.player.moves.move} | main: {this.player.moves.main} | sub: {this.player.moves.sub}</span><br />
                 <hr className="light"/>
+                {
+
+                }
+                {  }
                 { Object.keys(this.player.actions).map((name) =>
                     <span key={name}> {this.player.turn && this.player.controller === "player" ?
                         <input type="checkbox" checked={this.player.tile.map.action.name === name} onChange={() => {this.player.tile.map.setAction( this.player.actions[name] );}} />

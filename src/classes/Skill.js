@@ -15,13 +15,24 @@ export default class Skill {
         }
     }
 
+    bonus(stat) {
+        var b = 0;
+        if (this.player.increases[this.name]) {
+            b += this.player.increases[this.name];
+        }
+        if (stat && this.player.increases[stat]) {
+            b += this.player.increases[stat];
+        }
+        return b;
+    }
+
     value(base, stat) {
         if (base) {
-            return base + Math.sign(base) * this.level
+            return base + Math.sign(base) * this.level + this.bonus();
         } else if (stat) {
-            return base + Math.sign(base) * (this.level + this.player.stats[stat.toLowerCase()]);
+            return base + Math.sign(base) * (this.level + this.player.stats[stat.toLowerCase()]) + this.bonus(stat);
         } else {
-            return this.level;
+            return this.level + this.bonus();
         }
     }
 

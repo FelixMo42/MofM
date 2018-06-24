@@ -28,3 +28,29 @@ hr {
     background-color: gray;
     margin: 1px 0px;
 }
+
+table {
+    margin-top: 5px;
+    border-collapse: collapse;
+}
+table td, table th {
+    border-top: 1px solid #ddd;
+    border-left: 1px solid;
+    padding-left: 3px;
+    padding-right: 3px;
+
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+table tr:first-child td {
+    border-top: 0;
+}
+table tr:last-child td {
+    border-bottom: 0;
+}
+table tr td:first-child, table tr th:first-child {
+    border-left: 0;
+}
+table tr td:last-child, table tr th:last-child {
+    border-right: 0;
+}

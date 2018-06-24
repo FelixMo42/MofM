@@ -53,6 +53,10 @@ export default class Game extends React.Component {
         this.clearInterval(this.drawLoop);
     }
 
+    contextMenu(e) {
+        //e.preventDefault();
+    }
+
     render() {
         return (
             <div>
@@ -60,6 +64,9 @@ export default class Game extends React.Component {
                     id="Game"
                     ref="canvas"
                     tabIndex='1'
+
+                    onContextMenu={this.contextMenu}
+
                     onClick={(e) => {this.onMouseDown(e)}}
                     onMouseMove={(e) => {this.onMouseMoved(e)}}
                     onKeyPress={(e) => {this.onKeyPress(e)}}
