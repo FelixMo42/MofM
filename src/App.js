@@ -1,15 +1,15 @@
 import React from 'react'
 
 import './App.css'
-import Game from './new/element/Game'
+import Game from './tag/Game'
 
-import Structor from './new/Structor'
-import Item from './new/Item'
-import Skill from './new/Skill'
-import Action from './new/Action'
-import Player from './new/Player'
-import Tile from './new/Tile'
-import Map from './new/Map'
+import Structor from './data/Structor'
+import Item from './data/Item'
+import Skill from './data/Skill'
+import Action from './data/Action'
+import Player from './data/Player'
+import Tile from './data/Tile'
+import Map from './data/Map'
 
 var handToHand = new Skill({name: "Hand-to-Hand"})
 var swordsmenship = new Skill({name: "Swordsmenship"})
@@ -66,6 +66,6 @@ console.log(eb)
 
 export default class App extends React.Component {
     render() {
-        return <Game />
+        return <p>no render mode</p>//<Game />
     }
 }

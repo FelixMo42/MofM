@@ -1,6 +1,6 @@
 {
-    "short_name": "Lister",
-    "name": "Lister, the premiere list making app.",
+    "short_name": "MofM",
+    "name": "Maze of Monsters",
     "icons": [
         {
             "src": "favicon.ico",
@@ -9,7 +9,5 @@
         }
     ],
     "start_url": "./index.html",
-    "display": "standalone",
-    "theme_color": "#000000",
-    "background_color": "#ffffff"
+    "display": "standalone"
 }
