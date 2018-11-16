@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Map from '../Map'
+import Map from '../data/Map'
 
 export default class Game extends React.Component {
     constructor(world) {

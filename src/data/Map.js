@@ -1,4 +1,4 @@
-import Base from "./components/Base"
+import Base from "../util/Base"
 
 import Tile, { Tiles } from "./Tile"
 import Player, { Players } from "./Player"

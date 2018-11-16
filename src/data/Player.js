@@ -1,11 +1,11 @@
-import Graphics from "./components/Graphics"
+import Base from "../util/Base"
 
 import Skill, { Skills } from "./Skill"
 import Action, { Actions } from "./Action"
 
 const Players = {}
 
-export default class Player extends Graphics  {
+export default class Player extends Base  {
     constructor(params) {
         super(Players)
         this.Setup(params)

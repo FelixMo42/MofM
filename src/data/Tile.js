@@ -1,8 +1,8 @@
-import Graphics from "./components/Graphics"
+import Base from "../util/Base"
 
 const Tiles = {}
 
-export default class Tile extends Graphics {
+export default class Tile extends Base {
     constructor(params) {
         super(Tiles)
         this.Setup(params)

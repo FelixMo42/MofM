@@ -1,4 +1,4 @@
-import Base from "./components/Base"
+import Base from "../util/Base"
 
 const Items = {}
 
