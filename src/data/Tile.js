@@ -1,8 +1,10 @@
-import Base from "../util/Base"
+import Base from "../mixin/Base"
+
+import ManaPool from '../mixin/ManaPool'
 
 const Tiles = {}
 
-export default class Tile extends Base {
+export default class Tile extends ManaPool(Base) {
     constructor(params) {
         super(Tiles)
         this.Setup(params)
@@ -18,16 +20,6 @@ export default class Tile extends Base {
     effects = []
 
     // accessors
-
-    MP(mp) {
-        if (mp) {
-            this.mp += mp
-
-            // TODO: zero mp
-        }
-
-        return this.mp
-    }
 
     Map() {
         return this.map

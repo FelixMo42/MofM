@@ -1,4 +1,4 @@
-import Base from "../util/Base"
+import Base from "../mixin/Base"
 
 import Tile, { Tiles } from "./Tile"
 import Player, { Players } from "./Player"
@@ -125,7 +125,7 @@ export default class Map extends Base {
 
     // graphics
 
-    Render(ctx) {
+    Draw(ctx) {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
                 this.tiles[x][y].Render(ctx)
@@ -134,7 +134,6 @@ export default class Map extends Base {
 
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                //console.log(this.tiles[x][y].Player())
                 //if (this.tiles[x][y].graphics.structor) {
                 //    this.tiles[x][y].graphics.structor.Render(ctx)
                 //}
@@ -142,8 +141,7 @@ export default class Map extends Base {
                 //    this.tiles[x][y].graphics.item.Render(ctx)
                 //}
                 if (this.tiles[x][y].Player()) {
-                    this.tiles[x][y].Player().Render(ctx)
-                    console.log("nice")
+                    this.tiles[x][y].Player().Draw(ctx)
                 }
             }
         }

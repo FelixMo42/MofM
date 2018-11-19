@@ -3,17 +3,17 @@ import React from 'react';
 import Map from '../data/Map'
 
 export default class Game extends React.Component {
-    constructor(world) {
+    constructor(props) {
         super();
 
-        this.world = world;
+        this.world = props.world;
 
         this.FPS = 30;
     }
 
     draw() {
         this.graphics.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.world.Render(this.graphics);
+        this.world.Draw(this.graphics);
     }
 
     onMouseDown(e) {
@@ -60,6 +60,7 @@ export default class Game extends React.Component {
     render() {
         return (
             <div>
+                { this.world.players[0].html }
                 <canvas
                     id="Game"
                     ref="canvas"

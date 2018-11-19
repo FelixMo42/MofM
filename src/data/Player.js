@@ -1,11 +1,15 @@
-import Base from "../util/Base"
+import React from 'react'
+import Base from "../mixin/Base"
 
 import Skill, { Skills } from "./Skill"
 import Action, { Actions } from "./Action"
 
+import ManaPool from '../mixin/ManaPool'
+import HealthPool from '../mixin/HealthPool'
+
 const Players = {}
 
-export default class Player extends Base  {
+export default class Player extends HealthPool(ManaPool(Base)) {
     constructor(params) {
         super(Players)
         this.Setup(params)
@@ -70,36 +74,6 @@ export default class Player extends Base  {
         }
 
         return this.gp
-    }
-
-    HP(hp) {
-        if (hp) {
-            if (typeof hp === 'object') {
-                hp = Math.floor(Math.random() * (hp[1] - hp[0] + 1)) + hp[0]
-            }
-
-            this.hp += hp
-
-            // TODO: max health + death
-            // TODO: temp health
-        }
-
-        return this.hp
-    }
-
-    MP(mp) {
-        if (mp) {
-            if (typeof mp === 'object') {
-                mp = Math.floor(Math.random() * (mp[1] - mp[0] + 1)) + mp[0]
-            }
-
-            this.mp += mp
-
-            // TODO: max mp + 0 mp
-            // TODO: temp mp
-        }
-
-        return this.mp
     }
 
     XP(xp) {
@@ -227,14 +201,17 @@ export default class Player extends Base  {
 
     // graphics
 
-    Render(ctx) {
+    Draw(ctx) {
         ctx.beginPath();
 
         ctx.fillStyle = this.color;
         ctx.strokeStyle = "black";
-        ctx.arc( (this.x + .5) * ctx.size, (this.y + .5) * ctx.size, ctx.size / 2 - 3, 0, 2 * Math.PI);
+        var x = (this.tile.x + .5) * ctx.size
+        var y = (this.tile.y + .5) * ctx.size
+        ctx.arc(x, y, ctx.size / 2 - 3, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
+
         /*if (this.stack[0]) {
             if (this.stack[0](this)) {
                 this.stack.shift();

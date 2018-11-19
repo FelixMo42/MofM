@@ -1,4 +1,4 @@
-import Base from "../util/Base"
+import Base from "../mixin/Base"
 
 const Structors = {}
 
