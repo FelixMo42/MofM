@@ -62,6 +62,10 @@ export default class Item extends Base {
     AddEffect(effect) {
         this.effects.push(effect)
     }
+
+    Render() {
+        
+    }
 }
 
 export { Items }

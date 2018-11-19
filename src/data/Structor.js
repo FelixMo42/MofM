@@ -31,6 +31,10 @@ export default class Structor extends Base {
     Affect(effect) {
         // TODO: affect stuff
     }
+
+    Render() {
+
+    }
 }
 
 export { Structors }

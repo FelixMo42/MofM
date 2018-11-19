@@ -1,4 +1,7 @@
+import React from 'react'
+
 import Base from "../mixin/Base"
+import Interface from "../mixin/Interface"
 
 import Tile, { Tiles } from "./Tile"
 import Player, { Players } from "./Player"
@@ -7,7 +10,7 @@ import Structor, { Structors } from "./Structor"
 
 const Maps = {}
 
-export default class Map extends Base {
+export default class Map extends Interface(Base) {
     constructor(params) {
         super(Maps)
         this.Setup(params)
@@ -134,17 +137,25 @@ export default class Map extends Base {
 
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                //if (this.tiles[x][y].graphics.structor) {
-                //    this.tiles[x][y].graphics.structor.Render(ctx)
-                //}
-                //if (this.tiles[x][y].graphics.item) {
-                //    this.tiles[x][y].graphics.item.Render(ctx)
-                //}
+                if (this.tiles[x][y].structor) {
+                    this.tiles[x][y].structor.Render(ctx)
+                }
+                if (this.tiles[x][y].item) {
+                    this.tiles[x][y].item.Render(ctx)
+                }
                 if (this.tiles[x][y].Player()) {
                     this.tiles[x][y].Player().Draw(ctx)
                 }
             }
         }
+    }
+
+    Render() {
+        return (
+            <div>
+                { this.players.map((player, key) => player.html) }
+            </div>
+        )
     }
 }
 

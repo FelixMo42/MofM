@@ -1,15 +1,18 @@
 import React from 'react'
+
 import Base from "../mixin/Base"
+import ManaPool from '../mixin/ManaPool'
+import HealthPool from '../mixin/HealthPool'
+import Interface from '../mixin/Interface'
 
 import Skill, { Skills } from "./Skill"
 import Action, { Actions } from "./Action"
 
-import ManaPool from '../mixin/ManaPool'
-import HealthPool from '../mixin/HealthPool'
+import Draggable from 'react-draggable'
 
 const Players = {}
 
-export default class Player extends HealthPool(ManaPool(Base)) {
+export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     constructor(params) {
         super(Players)
         this.Setup(params)
@@ -24,7 +27,7 @@ export default class Player extends HealthPool(ManaPool(Base)) {
     mp = 20
 
     xp = 0
-    lv = 0
+    lv = 1
 
     gp = 0
     gear = {
@@ -217,6 +220,39 @@ export default class Player extends HealthPool(ManaPool(Base)) {
                 this.stack.shift();
             }
         }*/
+    }
+
+    Render(state) {
+        return (
+            <Draggable defaultPosition={{x: 100, y: 100}} handle=".box" cancel="span" bounds="#Game">
+                <div className="player box">
+                    <span className="top cancel">
+                        { this.name }
+                    </span>
+                    <hr />
+                    { state.window === "info" ? this.RenderInfo() : "" }
+                    { state.window === "gear" ? this.RenderGear() : "" }
+                    { state.window === "skills" ? this.RenderSkills() : "" }
+                    { state.window === "actions" ? this.RenderActions() : "" }
+                    <hr />
+                    <span onClick={()=>{state.window = "info"; this.UpdateHTML()}}>info </span>|
+                    <span onClick={()=>{state.window = "info"; this.UpdateHTML()}}> gear </span>|
+                    <span onClick={()=>{state.window = "info"; this.UpdateHTML()}}> skills </span>|
+                    <span onClick={()=>{state.window = "info"; this.UpdateHTML()}}> actions</span>
+                </div>
+            </Draggable>
+        )
+    }
+
+    RenderInfo() {
+        return (
+            <span id="info">
+                <span>HP: {this.hp} | MP: {this.mp}</span>
+                <hr className="light" />
+                <span>INT: {this.stats.int} | WIL: {this.stats.wil} | CHR: {this.stats.chr}</span><br />
+                <span>STR: {this.stats.str} | CON: {this.stats.con} | DEX: {this.stats.dex}</span>
+            </span>
+        );
     }
 }
 

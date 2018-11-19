@@ -1,7 +1,5 @@
 import React from 'react';
 
-import Map from '../data/Map'
-
 export default class Game extends React.Component {
     constructor(props) {
         super();
@@ -60,7 +58,6 @@ export default class Game extends React.Component {
     render() {
         return (
             <div>
-                { this.world.players[0].html }
                 <canvas
                     id="Game"
                     ref="canvas"
@@ -72,6 +69,7 @@ export default class Game extends React.Component {
                     onMouseMove={(e) => {this.onMouseMoved(e)}}
                     onKeyPress={(e) => {this.onKeyPress(e)}}
                 />
+                { this.world.html }
             </div>
         );
     }
