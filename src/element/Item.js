@@ -1,4 +1,4 @@
-import Base from "../mixin/Base"
+import Base from "../component/Base"
 
 const Items = {}
 
@@ -64,7 +64,7 @@ export default class Item extends Base {
     }
 
     Render() {
-        
+
     }
 }
 

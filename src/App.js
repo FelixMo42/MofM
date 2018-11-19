@@ -3,13 +3,13 @@ import React from 'react'
 import './App.css'
 import Game from './tag/Game'
 
-import Structor from './data/Structor'
-import Item from './data/Item'
-import Skill from './data/Skill'
-import Action from './data/Action'
-import Player from './data/Player'
-import Tile from './data/Tile'
-import Map from './data/Map'
+import Structor from './element/Structor'
+import Item from './element/Item'
+import Skill from './element/Skill'
+import Action from './element/Action'
+import Player from './element/Player'
+import Tile from './element/Tile'
+import Map from './element/Map'
 
 // create data //
 
@@ -53,20 +53,9 @@ var b = eb.Learn(pickup)
 
 var grass = new Tile()
 var world = new Map({name: "MoM", base: grass})
-world.PutPlayer(eb,0,1)
-world.PutPlayer(ew,1,1)
+world.PutPlayer(eb,0,0)
+world.PutPlayer(ew,9,9)
 world.SetItem(sword,0,1)
-
-// do stuff in world //
-
-a.Do(1,1)
-b.Do(0,1)
-
-console.log(ew)
-console.log(eb)
-
-
-// test //
 
 export default class App extends React.Component {
     render() {

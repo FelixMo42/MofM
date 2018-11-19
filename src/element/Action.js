@@ -1,4 +1,4 @@
-import Base from "../mixin/Base"
+import Base from "../component/Base"
 
 const Actions = {}
 
@@ -10,7 +10,7 @@ const styles = {
         do: (map, sx, sy, tx, ty, effect) => {
             map.Tile(tx,ty).Affect(effect)
         }
-    },
+    }
 }
 
 export default class Action extends Base {

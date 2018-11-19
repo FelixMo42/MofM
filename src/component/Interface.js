@@ -21,7 +21,7 @@ let Interface = (superclass) => class extends superclass {
     constructor(params) {
         super(params)
 
-        this.html = <UI data={this} />
+        this.html = <UI data={this} key={this.key}/>
     }
 }
 

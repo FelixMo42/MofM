@@ -1,6 +1,5 @@
-import Base from "../mixin/Base"
-
-import ManaPool from '../mixin/ManaPool'
+import Base from "../component/Base"
+import ManaPool from '../component/ManaPool'
 
 const Tiles = {}
 

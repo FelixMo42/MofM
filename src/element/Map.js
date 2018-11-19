@@ -1,7 +1,7 @@
 import React from 'react'
 
-import Base from "../mixin/Base"
-import Interface from "../mixin/Interface"
+import Base from "../component/Base"
+import Interface from "../component/Interface"
 
 import Tile, { Tiles } from "./Tile"
 import Player, { Players } from "./Player"

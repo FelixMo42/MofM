@@ -1,9 +1,9 @@
 import React from 'react'
 
-import Base from "../mixin/Base"
-import ManaPool from '../mixin/ManaPool'
-import HealthPool from '../mixin/HealthPool'
-import Interface from '../mixin/Interface'
+import Base from "../component/Base"
+import ManaPool from '../component/ManaPool'
+import HealthPool from '../component/HealthPool'
+import Interface from '../component/Interface'
 
 import Skill, { Skills } from "./Skill"
 import Action, { Actions } from "./Action"
@@ -236,9 +236,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
                     { state.window === "actions" ? this.RenderActions() : "" }
                     <hr />
                     <span onClick={()=>{state.window = "info"; this.UpdateHTML()}}>info </span>|
-                    <span onClick={()=>{state.window = "info"; this.UpdateHTML()}}> gear </span>|
-                    <span onClick={()=>{state.window = "info"; this.UpdateHTML()}}> skills </span>|
-                    <span onClick={()=>{state.window = "info"; this.UpdateHTML()}}> actions</span>
+                    <span onClick={()=>{state.window = "gear"; this.UpdateHTML()}}> gear </span>|
+                    <span onClick={()=>{state.window = "skills"; this.UpdateHTML()}}> skills </span>|
+                    <span onClick={()=>{state.window = "actions"; this.UpdateHTML()}}> actions</span>
                 </div>
             </Draggable>
         )
@@ -253,6 +253,18 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
                 <span>STR: {this.stats.str} | CON: {this.stats.con} | DEX: {this.stats.dex}</span>
             </span>
         );
+    }
+
+    RenderGear() {
+        return <span>gear</span>
+    }
+
+    RenderSkills() {
+        return <span>skills</span>
+    }
+
+    RenderActions() {
+        return <span>actions</span>
     }
 }
 
