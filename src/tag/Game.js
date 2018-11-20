@@ -1,12 +1,13 @@
 import React from 'react';
 
 export default class Game extends React.Component {
+    FPS = 30
+
     constructor(props) {
         super();
 
-        this.world = props.world;
-
-        this.FPS = 30;
+        this.world = props.world
+        this.world.NextTurn()
     }
 
     draw() {

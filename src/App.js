@@ -11,10 +11,20 @@ import Player from './element/Player'
 import Tile from './element/Tile'
 import Map from './element/Map'
 
-// create data //
+// create skills //
 
 var handToHand = new Skill({name: "hand-to-hand"})
 var swordsmenship = new Skill({name: "swordsmenship"})
+
+// create actions //
+
+var move = new Action({name: "move"})
+move.AddEffect({
+    style: "self",
+    player: {
+        push: -1
+    }
+})
 
 var punch = new Action({name: "punch", skill: handToHand, cost: {mp: -10}})
 punch.AddEffect({
@@ -42,19 +52,22 @@ sword.AddEffect({
     }
 })
 
-var eb = new Player({name: "Eden Black"})
-var ew = new Player({name: "Eden White"})
-var solder = new Player({name: "Solder"})
+// create players //
 
-var a = eb.Learn(punch)
-var b = eb.Learn(pickup)
+var eb = new Player({name: "Eden Black"})
+eb.Learn(punch)
+eb.Learn(pickup)
+eb.Learn(move)
+
+var ew = new Player({name: "Eden White"})
+ew.Learn(move)
 
 // set up world //
 
 var grass = new Tile()
 var world = new Map({name: "MoM", base: grass})
-world.PutPlayer(eb,0,0)
-world.PutPlayer(ew,9,9)
+//world.PutPlayer(eb,0,0)
+world.PutPlayer(ew,4,4)
 world.SetItem(sword,0,1)
 
 export default class App extends React.Component {

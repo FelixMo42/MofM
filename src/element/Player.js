@@ -143,6 +143,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Tile(tile) {
         if (tile) {
+            if (this.tile) {
+                this.tile.Player(false)
+            }
             this.tile = tile
             tile.Player(this)
         }
@@ -153,6 +156,14 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         return this.tile.Map()
     }
 
+    Position(x, y) {
+        if (x && y) {
+            this.Tile(this.Map().Tile(x, y))
+        }
+
+        return this.tile.Position()
+    }
+
     // functions
 
     Turn() {
@@ -160,7 +171,12 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         // TODO: regen MP, using dynamic system
         // TODO: cheak out effects
         // TODO: do ai stuff
-        this.tile.Map().NextTurn()
+
+        // temp ai logic
+            this.Action( Actions["move"] ).Do(1, 0)
+
+        this.stack = []
+        this.stack.push(() => this.Map().NextTurn())
     }
 
     Learn(action) {
@@ -186,6 +202,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         if (effect.mp) {
             this.MP(effect.mp)
         }
+        if (effect.push) {
+            this.Position(2,2)
+        }
         // TODO: more affect stuff
     }
 
@@ -204,6 +223,8 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     // graphics
 
+    stack = []
+
     Draw(ctx) {
         ctx.beginPath();
 
@@ -215,11 +236,11 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         ctx.fill();
         ctx.stroke();
 
-        /*if (this.stack[0]) {
+        if (this.stack[0]) {
             if (this.stack[0](this)) {
                 this.stack.shift();
             }
-        }*/
+        }
     }
 
     Render(state) {

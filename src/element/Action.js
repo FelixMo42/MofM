@@ -4,11 +4,14 @@ const Actions = {}
 
 const styles = {
     click: {
-        cheak: (obj, comp, x, y) => {
-            return true
-        },
-        do: (map, sx, sy, tx, ty, effect) => {
-            map.Tile(tx,ty).Affect(effect)
+        // TODO: add cheak
+        do: (map, sourcePos, targetPos, effect) => {
+            map.Tile(targetPos[0],targetPos[1]).Affect(effect)
+        }
+    },
+    self: {
+        do: (map, sourcePos, targetPos, effect) => {
+            map.Tile(sourcePos[0],sourcePos[1]).Affect(effect)
         }
     }
 }
@@ -71,7 +74,12 @@ export default class Action extends Base {
         this.player.Affect(this.cost)
 
         for (var i = 0; i < this.effects.length; i++) {
-            styles[this.effects[i].style].do(this.player.Map(), this.player.Tile().x, this.player.Tile().y, x, y, this.effects[i]);
+            styles[this.effects[i].style].do(
+                this.player.Map(),
+                this.player.Tile().Position(),
+                [x, y],
+                this.effects[i]
+            )
         }
 
         return true

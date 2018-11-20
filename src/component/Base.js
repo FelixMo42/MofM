@@ -12,7 +12,8 @@ export default class Base {
         id[name] += 1
 
         list[this.id] = this
-        list[this.name] = this
+
+        this.globalList = list
 
         this.key = GlobalKey.getNewKey()
     }
@@ -22,6 +23,9 @@ export default class Base {
 			Object.keys(params).map((key) => {
 				return (this[key] = params[key])
 			})
+        }
+        if (!(this.name in this.globalList)) {
+            this.globalList[this.name] = this // TODO: remove this when not needed
         }
 	}
 

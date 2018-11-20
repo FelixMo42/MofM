@@ -24,6 +24,10 @@ export default class Tile extends ManaPool(Base) {
         return this.map
     }
 
+    Position() {
+        return [this.x, this.y]
+    }
+
     Player(player) {
         if (player) {
             this.player = player

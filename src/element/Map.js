@@ -116,13 +116,13 @@ export default class Map extends Interface(Base) {
 
     // functions
 
-    NextTurn() {
+    NextTurn(player=false) {
         var pos = this.turn % this.players.length
         if (pos === 0) {
             // TODO: tile mana spread
             // TODO: outher loop stuff?
         }
-        this.player = this.players[pos]
+        this.player = this.players[0]
         this.player.Turn()
     }
 
