@@ -1,15 +1,31 @@
 import Base from "../component/Base"
+import Vec2 from "../util/Vec2"
 
 const Actions = {}
 
+// TODO: add line and cone to styles
+
 const styles = {
+    ball: {
+        cheak: (map, sourcePos, targetPos, effect) => {
+            return Math.floor(Vec2.dist(sourcePos, targetPos)) <= effect.range
+        },
+        do: (map, sourcePos, targetPos, effect) => {
+            map.Tile(targetPos).Affect(effect, sourcePos, targetPos) // TODO: implement area
+        }
+    },
     click: {
-        // TODO: add cheak
+        cheak: (map, sourcePos, targetPos, effect) => {
+            return true
+        },
         do: (map, sourcePos, targetPos, effect) => {
             map.Tile(targetPos).Affect(effect, sourcePos, targetPos)
         }
     },
     self: {
+        cheak: (map, sourcePos, targetPos, effect) => {
+            return true
+        },
         do: (map, sourcePos, targetPos, effect) => {
             map.Tile(sourcePos).Affect(effect, targetPos, sourcePos)
         }
@@ -26,6 +42,9 @@ export default class Action extends Base {
     style = "click"
     effects = []
     cost = {}
+
+    range = 1
+    area = 1
 
     target = {
         Position() {
@@ -78,6 +97,12 @@ export default class Action extends Base {
         if (!effect.style) {
             effect.style = this.style
         }
+        if (!effect.range) {
+            effect.range = this.range
+        }
+        if (!effect.area) {
+            effect.area = this.area
+        }
         if (!effect.skill && this.skill) {
             effect.skill = this.skill
         }
@@ -103,7 +128,11 @@ export default class Action extends Base {
                 }
             }
         }
-        // TODO: cheak positon
+        for (var i in this.effects) {
+            if (!styles[this.effects[i].style].cheak(this.Map(), this.Position(), positon, this.effects[i])) {
+                return false
+            }
+        }
         return true
     }
 
@@ -118,13 +147,8 @@ export default class Action extends Base {
 
         this.player.Affect(this.cost)
 
-        for (var i = 0; i < this.effects.length; i++) {
-            styles[this.effects[i].style].do(
-                this.player.Map(),
-                this.player.Tile().Position(),
-                positon,
-                this.effects[i]
-            )
+        for (var i in this.effects) {
+            styles[this.effects[i].style].do(this.Map(), this.Position(), positon, this.effects[i])
         }
 
         return true

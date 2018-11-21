@@ -124,7 +124,9 @@ export default class Map extends Interface(Base) {
 
     NextTurn() {
         if (this.players.length === 0) { return } // TODO: empty world bug
-
+        if (this.player) {
+            //console.debug(this.player.name + " ended his turn")
+        }
         var pos = this.turn % this.players.length
         if (pos === 0) {
             // TODO: tile mana spread

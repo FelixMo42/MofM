@@ -211,7 +211,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
                     this.Action( Actions["move"] ).Do(path[0])
                     path.shift()
                 }
-                //this.Action( Actions["punch"] ).Do(this.target.Position())
+                this.Action( Actions["punch"] ).Do(this.target.Position())
             }
             this.stack.push(() => {this.Map().NextTurn()})
         }

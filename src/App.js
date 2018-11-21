@@ -29,6 +29,7 @@ move.AddEffect({
 
 var punch = new Action({name: "punch", skill: handToHand, cost: {mp: -10}})
 punch.AddEffect({
+    style: "ball",
     player: {
         hp: [-20,-10]
     }
