@@ -6,12 +6,12 @@ const styles = {
     click: {
         // TODO: add cheak
         do: (map, sourcePos, targetPos, effect) => {
-            map.Tile(targetPos[0],targetPos[1]).Affect(effect, sourcePos, targetPos)
+            map.Tile(targetPos).Affect(effect, sourcePos, targetPos)
         }
     },
     self: {
         do: (map, sourcePos, targetPos, effect) => {
-            map.Tile(sourcePos[0],sourcePos[1]).Affect(effect, targetPos, sourcePos)
+            map.Tile(sourcePos).Affect(effect, targetPos, sourcePos)
         }
     }
 }
@@ -29,7 +29,7 @@ export default class Action extends Base {
 
     target = {
         Position() {
-            return this.pos
+            return this.positon
         }
     }
 
@@ -85,10 +85,12 @@ export default class Action extends Base {
         this.effects.push(effect)
     }
 
-    Do(pos) {
+    Do(positon) {
         // TODO: cheak - return false
 
-        this.target.pos = pos
+        console.debug(this.player.name + " uses " + this.name + " on " + positon.x + ", " + positon.y)
+
+        this.target.positon = positon
 
         this.player.Affect(this.cost)
 
@@ -96,7 +98,7 @@ export default class Action extends Base {
             styles[this.effects[i].style].do(
                 this.player.Map(),
                 this.player.Tile().Position(),
-                pos,
+                positon,
                 this.effects[i]
             )
         }

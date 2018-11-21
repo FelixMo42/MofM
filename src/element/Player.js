@@ -1,4 +1,5 @@
 import React from 'react'
+import Vec2 from '../util/Vec2'
 
 import Base from "../component/Base"
 import ManaPool from '../component/ManaPool'
@@ -160,7 +161,8 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Position(pos) {
         if (pos) {
-            this.Tile(this.Map().Tile(pos[0], pos[1]))
+            console.debug(this.name + " moves to " + pos.x + ", " + pos.y)
+            this.Tile(this.Map().Tile(pos))
         }
 
         return this.tile.Position()
@@ -183,7 +185,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
                 this.Action( Actions["punch"] ).Do(this.target.Position())
             }
 
-        this.stack.push(() => this.Map().NextTurn())
+        //this.stack.push(() => this.Map().NextTurn())
     }
 
     Learn(action) {
@@ -199,6 +201,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     Die() {
+        console.debug(this.name + " died")
         this.Map().RemovePlayer(this)
     }
 
@@ -238,7 +241,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         ctx.fillStyle = this.color
         ctx.strokeStyle = "black"
         var pos = this.tile.Position()
-        ctx.arc((pos[0] + .5) * ctx.size, (pos[1] + .5) * ctx.size, ctx.size / 2 - 3, 0, 2 * Math.PI)
+        ctx.arc((pos.x + .5) * ctx.size, (pos.y + .5) * ctx.size, ctx.size / 2 - 3, 0, 2 * Math.PI)
         ctx.fill()
         ctx.stroke()
 

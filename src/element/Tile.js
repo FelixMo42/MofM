@@ -12,7 +12,7 @@ export default class Tile extends ManaPool(Base) {
     // varibles
 
     name = "def"
-    color = "white";
+    color = "white"
 
     mp = 100
 
@@ -25,7 +25,7 @@ export default class Tile extends ManaPool(Base) {
     }
 
     Position() {
-        return [this.x, this.y]
+        return this.pos
     }
 
     Player(player) {
@@ -82,7 +82,7 @@ export default class Tile extends ManaPool(Base) {
 
     Walkable(mode) {
         // TODO: cheak mode
-        
+
         if (this.player) {
             return false
         }
@@ -93,10 +93,10 @@ export default class Tile extends ManaPool(Base) {
     // graphics
 
     Render(ctx) {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x * ctx.size, this.y * ctx.size, ctx.size, ctx.size);
-        ctx.strokeStyle = "#000000";
-        ctx.strokeRect(this.x * ctx.size, this.y * ctx.size, ctx.size, ctx.size);
+        ctx.fillStyle = this.color
+        ctx.fillRect(this.pos.x * ctx.size, this.pos.y * ctx.size, ctx.size, ctx.size)
+        ctx.strokeStyle = "#000000"
+        ctx.strokeRect(this.pos.x * ctx.size, this.pos.y * ctx.size, ctx.size, ctx.size)
     }
 }
 

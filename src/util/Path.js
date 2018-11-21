@@ -1,101 +1,69 @@
-function open(map, x, y, mode) {
-    var tile = map.Tile(x, y)
+import Vec2 from './Vec2'
+
+function open(map, pos, mode) {
+    var tile = map.Tile(pos)
     if (tile) {
-        return tile.Walkable()
+        return tile.Walkable(mode)
     } else {
         return false
     }
 }
 
-function find(map, startPos, endPos, mode) {
-    var open = {}
+function add(list, node) {
+	list[node.pos.x + "_" + node.pos.y] = node
+}
+
+function get(list, pos) {
+    return list[pos.x + "_" + pos.y]
+}
+
+function remove(list, pos) {
+	delete list[pos.x + "_" + pos.y]
+}
+
+function find(map, start, end, mode) {
+    var opened = {}
     var closed = {}
 
-    var sx = startPos[0]
-    var sy = startPos[1]
-    var ex = endPos[0]
-    var ey = endPos[1]
-
-    add(open, {
-        x: sx, y: sy,
+    add(opened, {
+        pos: start,
         s: 0,
-        t: dist(sx, sy, ex, ey)
+        t: Vec2.dist(start, end)
     })
 
     while (true) {
         var current = false
 
-        for (var node in open) {
-            if (!current || current.t > open[node].t) {
-                current = open[node]
+        for (var node in opened) {
+            if (!current || current.t > opened[node].t) {
+                current = opened[node]
             }
         }
 
         if (!current) { break; }
 
-        remove(open, current.x, current.y)
+        remove(opened, current.pos)
         add(closed, current)
 
-        if (get(closed , ex , ey)) { break; }
+        addNeighbours(map, opened, closed, current, end, mode)
 
-        addNeighbours(map, open, closed, current, ex, ey, mode)
+        if (get(closed, end) || get(opened, end)) { break }
     }
 
-    return calc(map, open, closed, sx, sy, ex, ey, mode)
+    return calc(map, opened, closed, start, end, mode)
 }
 
-function line(map, sx, sy, ex, ey, mode) {
-    var good = true
-    var steps = Math.max(Math.abs(sx-ex),Math.abs(sy-ey))
-    var x, y, p = 0
-    for (var step = 0; step < steps; step++) {
-        p = step / steps
-        x = Math.floor(sx * (1-p) + ex * p)
-	    y = Math.floor(sy * (1-p) + ey * p)
-        if (x !== sx && y !== sy) {
-            if (!open(map, x, y, mode)) {
-                good = false
-            }
-        }
-    }
-    return good
-}
-
-var sqrts = {}
-
-function sqrt(n) {
-    if (!sqrts[n]) {
-        sqrts[n] = Math.sqrt(n)
-    }
-    return sqrts[n]
-}
-
-function dist(sx, sy, ex, ey) {
-    return sqrt(Math.pow(sx - ex, 2) + Math.pow(sy - ey, 2))
-}
-
-function add(l, t) {
-	l[t.x + "_" + t.y] = t
-}
-
-function get(l, x, y) {
-    return l[x + "_" + y]
-}
-
-function remove(l, x, y) {
-	delete l[x + "_" + y]
-}
-
-function addNeighbours(map, o, c, node, ex, ey, mode) {
-    var n = []
+function addNeighbours(map, opened, closed, node, end, mode) {
     var f = node.s + 10
 
-    for (var x = node.x - 1; x <= node.x + 1; x++) {
-        for (var y = node.y - 1; y <= node.y + 1; y++) {
-            if ((x !== node.x || y !== node.y) && !get(c, x, y)) {
-                var d = dist(x,y , ex,ey)
-                add(open(map, x, y, mode) && o || c, {
-                    x: x, y: y,
+    Vec2.forEach(
+        new Vec2(node.pos.x - 1, node.pos.y - 1),
+        new Vec2(node.pos.x + 1, node.pos.y + 1),
+        (pos) => {
+            if ((pos.x !== node.pos.x || pos.y !== node.pos.y) && !get(closed, pos)) {
+                var d = Vec2.dist(pos , end)
+                add(open(map, pos, mode) && opened || closed, {
+                    pos: pos,
                     s: f,
                     d: d,
                     t: d + f,
@@ -103,32 +71,46 @@ function addNeighbours(map, o, c, node, ex, ey, mode) {
                 })
             }
         }
-    }
-
-    return n
+    )
 }
 
-function calc(map, o, c, sx, sy, ex, ey, mode) {
-    if (!get(c, ex, ey)) { return []; }
+function calc(map, opened, closed, start, end, mode) {
+    if (!get(closed, end) && !get(opened, end)) { return [] }
 
-    var prev = get(c, ex, ey)
+    var prev = get(closed, end) || get(opened, end)
     var path = []
     while (prev.p) {
-        path.push( [prev.x, prev.y] )
+        path.push(prev.pos)
         prev = prev.p
     }
 
     path.reverse()
 
-    if (!open(map, ex, ey, mode)) {
+    if (!open(map, end, mode)) {
         path.pop()
     }
 
     return path
 }
 
+function line(map, start, end, mode) {
+    var good = true
+    var steps = Math.max(Math.abs(start.x - end.x), Math.abs(start.y - end.y))
+    var x, y, p = 0
+    for (var step = 0; step < steps; step++) {
+        p = step / steps
+        x = Math.floor(start.x * (1-p) + end.x * p)
+	    y = Math.floor(start.y * (1-p) + end.y * p)
+        if (x !== start.x && y !== start.y) {
+            if (!open(map, Vec2(x, y), mode)) {
+                good = false
+            }
+        }
+    }
+    return good
+}
+
 export default {
     find: find,
-    line: line,
-    dist: dist
+    line: line
 }

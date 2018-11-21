@@ -24,8 +24,9 @@ export default class Base {
 				return (this[key] = params[key])
 			})
         }
+
         if (!(this.name in this.globalList)) {
-            this.globalList[this.name] = this // TODO: remove this when not needed
+            this.globalList[this.name] = this // TODO: remove when name system not in use
         }
 	}
 

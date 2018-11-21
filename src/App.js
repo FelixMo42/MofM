@@ -2,6 +2,7 @@ import React from 'react'
 
 import './App.css'
 import Game from './tag/Game'
+import Vec2 from './util/Vec2'
 
 import Structor from './element/Structor'
 import Item from './element/Item'
@@ -71,11 +72,25 @@ ew.target = eb
 
 var grass = new Tile()
 var world = new Map({name: "MoM", base: grass})
-world.PutPlayer(eb,0,9)
-world.PutPlayer(ew,9,0)
+world.PutPlayer(eb,new Vec2(0,9))
+world.PutPlayer(ew,new Vec2(9,0))
+
+//*
 
 export default class App extends React.Component {
     render() {
         return <Game world={world} />
     }
 }
+
+/*
+
+///
+
+export default class App extends React.Component {
+    render() {
+        return <p />
+    }
+}
+
+//*/

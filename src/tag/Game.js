@@ -1,13 +1,13 @@
 import React from 'react';
 
 export default class Game extends React.Component {
-    FPS = 1
+    FPS = 10
 
     constructor(props) {
         super();
 
         this.world = props.world
-        this.world.NextTurn()
+        //this.world.NextTurn()
     }
 
     draw() {
