@@ -19,6 +19,11 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     constructor(params) {
         super(Players)
         this.Setup(params)
+
+        this.max_moves = {}
+        for (var k in this.moves) {
+            this.max_moves[k] = this.moves[k]
+        }
     }
 
     // varibles
@@ -57,7 +62,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         str: 0, con: 0, dex: 0
     }
     moves = {
-        move: 5,
+        move: 2,
         main: 1,
         sub: 2
     }
@@ -67,6 +72,8 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         stat: {},
         skill: {},
     }
+
+    controller = "robot"
 
     // accessors
 
@@ -168,6 +175,20 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         return this.tile.Position()
     }
 
+    Moves(name, amu) {
+        if (name) {
+            if (amu) {
+                this.moves[name] = Math.min(
+                    Math.max(this.moves[name] + amu, 0),
+                    this.max_moves[name]
+                )
+            }
+            return this.moves[name]
+        } else {
+            return this.moves
+        }
+    }
+
     // functions
 
     Turn() {
@@ -177,15 +198,23 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         // TODO: cheak out effects
         // TODO: do ai stuff
 
-        // temp ai logic
-            var path = Path.find(this.Map(), this.Position(), this.target.Position())
-            if (path.length > 0) {
-                this.Action( Actions["move"] ).Do(path[0])
-            } else {
-                this.Action( Actions["punch"] ).Do(this.target.Position())
-            }
+        // regen moves
+        for (var k in this.moves) {
+            this.moves[k] = this.max_moves[k]
+        }
 
-        //this.stack.push(() => this.Map().NextTurn())
+        // AI
+        if (this.controller === "robot") {
+            if (this.target.HP() > 0) {
+                var path = Path.find(this.Map(), this.Position(), this.target.Position())
+                while (path.length > 0 && this.moves.move > 0) {
+                    this.Action( Actions["move"] ).Do(path[0])
+                    path.shift()
+                }
+                //this.Action( Actions["punch"] ).Do(this.target.Position())
+            }
+            this.stack.push(() => {this.Map().NextTurn()})
+        }
     }
 
     Learn(action) {
@@ -213,7 +242,12 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             this.MP(effect.mp)
         }
         if (effect.push) {
-            this.Position(effect.target.Position())
+            this.Position(effect.target.Position()) // TODO: make it not teleportation
+        }
+        if (effect.moves) {
+            for (var k in effect.moves) {
+                    this.Moves(k, effect.moves[k])
+            }
         }
         // TODO: more affect stuff
     }
@@ -254,7 +288,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Render(state) {
         return (
-            <Draggable defaultPosition={{x: 100, y: 100}} handle=".box" cancel="span" bounds="#Game">
+            <Draggable defaultPosition={{x: 0, y: 0}} handle=".box" cancel="span" bounds="#Game">
                 <div className="player box">
                     <span className="top cancel">
                         { this.name }
@@ -294,7 +328,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     RenderActions() {
-        return <span>actions</span>
+        return (<span id="actions">
+            <span>main: {this.moves.main} | move: {this.moves.move} | sub: {this.moves.sub}</span>
+        </span>)
     }
 }
 

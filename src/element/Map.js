@@ -74,6 +74,7 @@ export default class Map extends Interface(Base) {
             this.players[i - 1] = this.players[i]
         }
         this.players = this.players.slice(0,-1)
+        this.UpdateHTML()
     }
 
     PutItem(item, x, y) {
@@ -156,8 +157,6 @@ export default class Map extends Interface(Base) {
                 }
             }
         }
-
-        this.NextTurn()
     }
 
     Render() {

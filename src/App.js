@@ -19,7 +19,7 @@ var swordsmenship = new Skill({name: "swordsmenship"})
 
 // create actions //
 
-var move = new Action({name: "move"})
+var move = new Action({name: "move", cost: {moves: {move: -1}}})
 move.AddEffect({
     style: "self",
     player: {
@@ -41,7 +41,7 @@ pickup.AddEffect({
     }
 })
 
-var slice = new Action({name: "sLice"})
+var slice = new Action({name: "slice"})
 slice.AddEffect({
 
 })
@@ -58,6 +58,7 @@ sword.AddEffect({
 var eb = new Player({name: "Eden Black"})
 eb.Learn(move)
 eb.Learn(punch)
+//eb.controller = "player"
 eb.color = "black"
 
 var ew = new Player({name: "Eden White"})

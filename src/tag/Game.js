@@ -7,7 +7,7 @@ export default class Game extends React.Component {
         super();
 
         this.world = props.world
-        //this.world.NextTurn()
+        this.world.NextTurn()
     }
 
     draw() {

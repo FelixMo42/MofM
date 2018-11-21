@@ -85,8 +85,32 @@ export default class Action extends Base {
         this.effects.push(effect)
     }
 
+    Cheak(positon) {
+        if (this.cost.hp) {
+            if (this.cost.hp > this.player.HP()) {
+                return false
+            }
+        }
+        if (this.cost.mp) {
+            if (this.cost.mp > this.player.MP()) {
+                return false
+            }
+        }
+        if (this.cost.moves) {
+            for (var k in this.cost.moves) {
+                if (this.cost.moves[k] > this.player.Moves(k)) {
+                    return false
+                }
+            }
+        }
+        // TODO: cheak positon
+        return true
+    }
+
     Do(positon) {
-        // TODO: cheak - return false
+        if (!this.Cheak(positon)) {
+            return false
+        }
 
         console.debug(this.player.name + " uses " + this.name + " on " + positon.x + ", " + positon.y)
 
