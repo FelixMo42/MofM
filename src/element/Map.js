@@ -47,9 +47,9 @@ export default class Map extends Interface(Base) {
     // accessors
 
     Tile(x, y) {
-        // TODO: out of range
-
-        return this.tiles[x][y]
+        if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
+            return this.tiles[x][y]
+        }
     }
 
     // creater functions
@@ -68,6 +68,13 @@ export default class Map extends Interface(Base) {
             for (var y = Math.min(sy,ey); x < Math.min(sy,ey); y++) {
                 this.PutPlayer(Players[player].Clone(), x, y)
             }
+        }
+    }
+
+    RemovePlayer(player) {
+        if (player.Tile()) {
+            player.Tile().Player(false)
+            player.Tile(false)
         }
     }
 
@@ -122,7 +129,8 @@ export default class Map extends Interface(Base) {
             // TODO: tile mana spread
             // TODO: outher loop stuff?
         }
-        this.player = this.players[0]
+        this.turn += 1
+        this.player = this.players[pos]
         this.player.Turn()
     }
 

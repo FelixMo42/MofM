@@ -30,7 +30,7 @@ export default class Item extends Base {
 
     // functions
 
-    Affect(effect) {
+    Affect(effect, sourcePos, targetPos) {
         if (effect.pickup) {
             this.Pickup(effect.source.Player())
         }

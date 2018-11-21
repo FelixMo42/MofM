@@ -55,20 +55,24 @@ sword.AddEffect({
 // create players //
 
 var eb = new Player({name: "Eden Black"})
-eb.Learn(punch)
-eb.Learn(pickup)
 eb.Learn(move)
+eb.Learn(punch)
+eb.color = "black"
 
 var ew = new Player({name: "Eden White"})
 ew.Learn(move)
+ew.Learn(punch)
+ew.color = "white"
+
+eb.target = ew
+ew.target = eb
 
 // set up world //
 
 var grass = new Tile()
 var world = new Map({name: "MoM", base: grass})
-//world.PutPlayer(eb,0,0)
-world.PutPlayer(ew,4,4)
-world.SetItem(sword,0,1)
+world.PutPlayer(eb,0,9)
+world.PutPlayer(ew,9,0)
 
 export default class App extends React.Component {
     render() {

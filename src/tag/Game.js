@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default class Game extends React.Component {
-    FPS = 30
+    FPS = 1
 
     constructor(props) {
         super();

@@ -4,11 +4,13 @@ import Base from "../component/Base"
 import ManaPool from '../component/ManaPool'
 import HealthPool from '../component/HealthPool'
 import Interface from '../component/Interface'
+import Graphics from '../component/Graphics'
 
 import Skill, { Skills } from "./Skill"
 import Action, { Actions } from "./Action"
 
 import Draggable from 'react-draggable'
+import Path from '../util/Path.js'
 
 const Players = {}
 
@@ -156,9 +158,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         return this.tile.Map()
     }
 
-    Position(x, y) {
-        if (x && y) {
-            this.Tile(this.Map().Tile(x, y))
+    Position(pos) {
+        if (pos) {
+            this.Tile(this.Map().Tile(pos[0], pos[1]))
         }
 
         return this.tile.Position()
@@ -167,15 +169,20 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     // functions
 
     Turn() {
+        this.stack = []
         // TODO: regen HP
         // TODO: regen MP, using dynamic system
         // TODO: cheak out effects
         // TODO: do ai stuff
 
         // temp ai logic
-            this.Action( Actions["move"] ).Do(1, 0)
+            var path = Path.find(this.Map(), this.Position(), this.target.Position())
+            if (path.length > 0) {
+                this.Action( Actions["move"] ).Do(path[0])
+            } else {
+                this.Action( Actions["punch"] ).Do(this.target.Position())
+            }
 
-        this.stack = []
         this.stack.push(() => this.Map().NextTurn())
     }
 
@@ -192,10 +199,10 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     Die() {
-        // TODO: Make player die
+        this.Map().RemovePlayer(this)
     }
 
-    Affect(effect) {
+    Affect(effect, sourcePos, targetPos) {
         if (effect.hp) {
             this.HP(effect.hp)
         }
@@ -203,7 +210,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             this.MP(effect.mp)
         }
         if (effect.push) {
-            this.Position(2,2)
+            this.Position(effect.target.Position())
         }
         // TODO: more affect stuff
     }
@@ -226,19 +233,18 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     stack = []
 
     Draw(ctx) {
-        ctx.beginPath();
+        ctx.beginPath()
 
-        ctx.fillStyle = this.color;
-        ctx.strokeStyle = "black";
-        var x = (this.tile.x + .5) * ctx.size
-        var y = (this.tile.y + .5) * ctx.size
-        ctx.arc(x, y, ctx.size / 2 - 3, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
+        ctx.fillStyle = this.color
+        ctx.strokeStyle = "black"
+        var pos = this.tile.Position()
+        ctx.arc((pos[0] + .5) * ctx.size, (pos[1] + .5) * ctx.size, ctx.size / 2 - 3, 0, 2 * Math.PI)
+        ctx.fill()
+        ctx.stroke()
 
         if (this.stack[0]) {
             if (this.stack[0](this)) {
-                this.stack.shift();
+                this.stack.shift()
             }
         }
     }
@@ -273,7 +279,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
                 <span>INT: {this.stats.int} | WIL: {this.stats.wil} | CHR: {this.stats.chr}</span><br />
                 <span>STR: {this.stats.str} | CON: {this.stats.con} | DEX: {this.stats.dex}</span>
             </span>
-        );
+        )
     }
 
     RenderGear() {

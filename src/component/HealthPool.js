@@ -7,7 +7,11 @@ let ManaPool = (superclass) => class extends superclass {
 
             this.hp += hp
 
-            // TODO: max health + death
+            if (this.hp < 0) {
+                this.Die()
+            }
+
+            // TODO: max health
             // TODO: temp health
         }
 

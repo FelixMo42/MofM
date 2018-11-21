@@ -80,6 +80,16 @@ export default class Tile extends ManaPool(Base) {
         // TODO: cheak effects
     }
 
+    Walkable(mode) {
+        // TODO: cheak mode
+        
+        if (this.player) {
+            return false
+        }
+
+        return true
+    }
+
     // graphics
 
     Render(ctx) {
