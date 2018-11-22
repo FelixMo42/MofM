@@ -19,7 +19,9 @@ var swordsmenship = new Skill({name: "swordsmenship"})
 
 // create actions //
 
-var move = new Action({name: "move", cost: {moves: {move: -1}}})
+var move = new Action({name: "move", range: 1, cost: {
+    moves: {move: -1}
+}})
 move.AddEffect({
     style: "self",
     player: {
@@ -27,7 +29,9 @@ move.AddEffect({
     }
 })
 
-var punch = new Action({name: "punch", skill: handToHand, cost: {mp: -10}})
+var punch = new Action({name: "punch", skill: handToHand, cost: {
+    moves: {main: -1}
+}})
 punch.AddEffect({
     style: "ball",
     player: {
@@ -59,7 +63,7 @@ sword.AddEffect({
 var eb = new Player({name: "Eden Black"})
 eb.Learn(move)
 eb.Learn(punch)
-//eb.controller = "player"
+eb.controller = "player"
 eb.color = "black"
 
 var ew = new Player({name: "Eden White"})

@@ -123,10 +123,13 @@ export default class Action extends Base {
         }
         if (this.cost.moves) {
             for (var k in this.cost.moves) {
-                if (this.cost.moves[k] > this.player.Moves(k)) {
+                if (this.cost.moves[k] < -this.player.Moves(k)) {
                     return false
                 }
             }
+        }
+        if (Math.floor(Vec2.dist(this.Position(), positon)) > this.range) {
+            return false
         }
         for (var i in this.effects) {
             if (!styles[this.effects[i].style].cheak(this.Map(), this.Position(), positon, this.effects[i])) {

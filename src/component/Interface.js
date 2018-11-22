@@ -6,7 +6,7 @@ class UI extends React.Component {
         this.state = {}
 
         this.UpdateHTML = () => {
-            this.setState({update: true});
+            this.setState({update: true})
         }
 
         this.props.data.UpdateHTML = this.UpdateHTML
@@ -21,6 +21,7 @@ let Interface = (superclass) => class extends superclass {
     constructor(params) {
         super(params)
 
+        this.UpdateHTML = () => {}
         this.html = <UI data={this} key={this.key}/>
     }
 }

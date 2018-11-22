@@ -12,6 +12,8 @@ export default class Structor extends Base {
 
     name = "def"
 
+    walkable = true
+
     // accessors
 
     Tile(tile) {
@@ -24,6 +26,11 @@ export default class Structor extends Base {
 
     Map() {
         return this.tile.Map()
+    }
+
+    Walkable(mode) {
+        // TODO: cheak mode
+        return this.walkable
     }
 
     // functions

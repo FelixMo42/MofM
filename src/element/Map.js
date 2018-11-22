@@ -1,5 +1,6 @@
 import React from 'react'
 import Vec2 from '../util/Vec2'
+import Controller from '../util/Controller'
 
 import Base from "../component/Base"
 import Interface from "../component/Interface"
@@ -167,6 +168,16 @@ export default class Map extends Interface(Base) {
                 { this.players.map((player, key) => player.html) }
             </div>
         )
+    }
+
+    OnMouseDown(pos) {
+        Controller.OnMouseDown(pos)
+    }
+
+    OnMouseMoved(pos) {
+    }
+
+    OnKeyPress(key) {
     }
 }
 

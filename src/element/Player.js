@@ -1,5 +1,6 @@
 import React from 'react'
 import Vec2 from '../util/Vec2'
+import Controller from '../util/Controller'
 
 import Base from "../component/Base"
 import ManaPool from '../component/ManaPool'
@@ -193,6 +194,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Turn() {
         this.stack = []
+        this.turn = true
+        console.log(this)
+
         // TODO: regen HP
         // TODO: regen MP, using dynamic system
         // TODO: cheak out effects
@@ -200,7 +204,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
         // regen moves
         for (var k in this.moves) {
-            this.moves[k] = this.max_moves[k]
+            this.Moves(k, this.max_moves[k])
         }
 
         // AI
@@ -213,8 +217,19 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
                 }
                 this.Action( Actions["punch"] ).Do(this.target.Position())
             }
-            this.stack.push(() => {this.Map().NextTurn()})
+            this.stack.push(() => {
+                this.EndTurn()
+                return true
+            })
         }
+
+        this.UpdateHTML()
+    }
+
+    EndTurn() {
+        this.turn = false
+        this.UpdateHTML()
+        this.Map().NextTurn()
     }
 
     Learn(action) {
@@ -246,7 +261,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
         if (effect.moves) {
             for (var k in effect.moves) {
-                    this.Moves(k, effect.moves[k])
+                this.Moves(k, effect.moves[k])
             }
         }
         // TODO: more affect stuff
@@ -330,6 +345,21 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     RenderActions() {
         return (<span id="actions">
             <span>main: {this.moves.main} | move: {this.moves.move} | sub: {this.moves.sub}</span>
+            <hr className="light"/>
+            { Object.keys(this.actions).map((id) =>
+                <span key={id}>
+                    {this.turn && this.controller === "player" ?
+                        <input type="checkbox"
+                            checked={Controller.Action() === this.actions[id]}
+                            onChange={() => {Controller.Action(this.actions[id])}}
+                        />
+                    :
+                        "- "
+                    }
+                    {this.actions[id].name}
+                    <br />
+                </span>
+            ) }
         </span>)
     }
 }

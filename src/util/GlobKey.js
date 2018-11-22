@@ -1,8 +1,8 @@
-var key = 0;
+var key = 0
 
 export default {
     getNewKey: function() {
-        key++;
-        return key - 1;
+        key++
+        return key - 1
     }
 }

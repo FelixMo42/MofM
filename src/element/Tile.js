@@ -18,6 +18,8 @@ export default class Tile extends ManaPool(Base) {
 
     effects = []
 
+    walkable = true
+
     // accessors
 
     Map() {
@@ -86,8 +88,11 @@ export default class Tile extends ManaPool(Base) {
         if (this.player) {
             return false
         }
+        if (this.structor && !this.structor.Walkable(mode)) {
+            return false
+        }
 
-        return true
+        return this.walkable
     }
 
     // graphics
