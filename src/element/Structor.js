@@ -4,7 +4,7 @@ const Structors = {}
 
 export default class Structor extends Base {
     constructor(params) {
-        super(Structor)
+        super(Structors)
         this.Setup(params)
     }
 
@@ -19,7 +19,6 @@ export default class Structor extends Base {
     Tile(tile) {
         if (tile) {
             this.tile = tile
-            tile.Structor(this)
         }
         return this.tile
     }
@@ -33,14 +32,23 @@ export default class Structor extends Base {
         return this.walkable
     }
 
+    Position() {
+        return this.tile.Position()
+    }
+
     // functions
 
     Affect(effect) {
         // TODO: affect stuff
     }
 
-    Render() {
-
+    Draw(ctx) {
+        var dif = .05
+        var add = dif * ctx.size
+        var size = ctx.size * (1 - dif * 2)
+        var pos = this.Position()
+        ctx.fillStyle = this.color
+        ctx.fillRect(pos.x * ctx.size + add, pos.y * ctx.size + add, size, size)
     }
 }
 

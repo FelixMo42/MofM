@@ -33,7 +33,7 @@ export default class Tile extends ManaPool(Base) {
     Player(player) {
         if (player) {
             this.player = player
-        } else if (player === false) {
+        } else if (this.player && player === false) {
             delete this.player
         }
         return this.player
@@ -42,7 +42,9 @@ export default class Tile extends ManaPool(Base) {
     Item(item) {
         if (item) {
             this.item = item
-        } else if (item === false) {
+            item.Tile(this)
+        } else if (this.item && item === false) {
+            this.item.Tile(false)
             delete this.item
         }
         return this.item
@@ -50,8 +52,10 @@ export default class Tile extends ManaPool(Base) {
 
     Structor(structor) {
         if (structor) {
+            structor.Tile(this)
             this.structor = structor
-        } else if (structor === false) {
+        } else if (this.structor && structor === false) {
+            this.structor.Tile(false)
             delete this.structor
         }
         return this.structor
@@ -97,7 +101,7 @@ export default class Tile extends ManaPool(Base) {
 
     // graphics
 
-    Render(ctx) {
+    Draw(ctx) {
         ctx.fillStyle = this.color
         ctx.fillRect(this.pos.x * ctx.size, this.pos.y * ctx.size, ctx.size, ctx.size)
         ctx.strokeStyle = "#000000"

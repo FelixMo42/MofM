@@ -78,38 +78,47 @@ export default class Map extends Interface(Base) {
         this.UpdateHTML()
     }
 
-    PutItem(item, x, y) {
-        item.Tile(this.Tile(x, y))
+    PutItem(item, pos) {
+        this.Tile(pos).Item(item)
     }
 
-    SetItem(item, sx, sy, ex, ey) {
+    SetItem(item, start, end) {
         if (item instanceof Item) {
             item = item.id
         }
 
-        ex = ex || sx
-        ey = ey || sy
+        end = end || start
 
-        for (var x = Math.min(sx,ex); x <= Math.max(sx,ex); x++) {
-            for (var y = Math.min(sy,ey) - 1; y <= Math.max(sy,ey); y++) {
-                this.PutItem(Items[item].Clone(), x, y)
-            }
+        if (!item) {
+            Vec2.forEach(start, end, (pos) => {
+                this.PutItem(false, pos)
+            })
+        } else {
+            Vec2.forEach(start, end, (pos) => {
+                this.PutItem(Items[item].Clone(), pos)
+            })
         }
     }
 
-    PutStructor(structor, x, y) {
-        structor.Tile(this.Tile(x, y))
+    PutStructor(structor, pos) {
+        this.Tile(pos).Structor(structor)
     }
 
-    SetStructor(structor, sx, sy, ex, ey) {
+    SetStructor(structor, start, end) {
         if (structor instanceof Structor) {
             structor = structor.id
         }
 
-        for (var x = Math.min(sx,ex); x < Math.max(sx,ex); x++) {
-            for (var y = Math.min(sy,ey); x < Math.min(sy,ey); y++) {
-                this.PutStructor(Structors[structor].Clone(), x, y)
-            }
+        end = end || start
+
+        if (!structor) {
+            Vec2.forEach(start, end, (pos) => {
+                this.PutStructor(false, pos)
+            })
+        } else {
+            Vec2.forEach(start, end, (pos) => {
+                this.PutStructor(Structors[structor].Clone(), pos)
+            })
         }
     }
 
@@ -124,6 +133,9 @@ export default class Map extends Interface(Base) {
         if (tile instanceof Tile) {
             tile = tile.id
         }
+
+        end = end || start
+
         Vec2.forEach(start, end, (pos) => {
             this.PutTile(Tiles[tile].Clone(), pos)
         })
@@ -148,17 +160,17 @@ export default class Map extends Interface(Base) {
     Draw(ctx) {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
-                this.tiles[x][y].Render(ctx)
+                this.tiles[x][y].Draw(ctx)
             }
         }
 
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                if (this.tiles[x][y].structor) {
-                    this.tiles[x][y].structor.Render(ctx)
+                if (this.tiles[x][y].Structor()) {
+                    this.tiles[x][y].Structor().Draw(ctx)
                 }
-                if (this.tiles[x][y].item) {
-                    this.tiles[x][y].item.Render(ctx)
+                if (this.tiles[x][y].Item()) {
+                    this.tiles[x][y].Item().Draw(ctx)
                 }
                 if (this.tiles[x][y].Player()) {
                     this.tiles[x][y].Player().Draw(ctx)

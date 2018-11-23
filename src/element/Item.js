@@ -12,6 +12,7 @@ export default class Item extends Base {
 
     name = "def"
 
+    size = 1
     effects = []
 
     // accessors
@@ -19,9 +20,14 @@ export default class Item extends Base {
     Tile(tile) {
         if (tile) {
             this.tile = tile
-            tile.Item(this)
+        } else if (this.tile && tile === false) {
+            delete this.tile
         }
         return this.tile
+    }
+
+    Position() {
+        return this.tile.Position()
     }
 
     Map() {
@@ -40,7 +46,6 @@ export default class Item extends Base {
 
     Pickup(player) {
         this.tile.Item(false)
-        delete this.tile
         this.player = player
 
         player.Equip(this, "gear", 1)
@@ -48,23 +53,30 @@ export default class Item extends Base {
         return this
     }
 
-    Putdown() {
-        // TODO: put down stuff
+    Drop() {
+        // TODO: what if tile full?
+        this.player.Unquip(this)
+        this.player.Tile().Item(this)
     }
 
     Equip() {
-        // TODO: no player error
-        // TODO: no slot error
-
-        // TODO: equip this
+        this.player.Unquip(this)
+        this.player.Equip(this, this.slot, 1)
     }
 
     AddEffect(effect) {
         this.effects.push(effect)
     }
 
-    Render() {
+    // graphics
 
+    Draw(ctx) {
+        var dif = .3
+        var add = dif * ctx.size
+        var size = ctx.size * (1 - dif * 2)
+        var pos = this.Position()
+        ctx.fillStyle = this.color
+        ctx.fillRect(pos.x * ctx.size + add, pos.y * ctx.size + add, size, size)
     }
 }
 

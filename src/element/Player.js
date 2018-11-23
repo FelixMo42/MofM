@@ -14,6 +14,42 @@ import Path from '../util/Path.js'
 
 const Players = {}
 
+class Slot {
+    amu = 0
+    items = []
+
+    constructor(name, max) {
+        this.name = name
+        this.max = max
+    }
+
+    add(item) {
+        item.player.items[item] = this
+        this.amu += item.size
+        this.items.push(item)
+    }
+
+    remove(item) {
+        delete this.items[this.items.indexOf(item)]
+    }
+
+    render() {
+        return (
+            <div>
+                { Object.keys(this.items).map((pos) => {
+                    return (
+                        <div key={this.items[pos].key}>
+                            {this.items[pos].name}
+                            <button onClick={() => {this.items[pos].Equip()}}>E</button>
+                            <button onClick={() => {this.items[pos].Drop()}}>D</button>
+                        </div>
+                    )
+                }) }
+            </div>
+        )
+    }
+}
+
 export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     constructor(params) {
         super(Players)
@@ -37,21 +73,15 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     lv = 1
 
     gp = 0
+
+    items = {}
     gear = {
-        hands: [],
-        chest: [],
-        head: [],
-        legs: [],
-        feet: [],
-        gear: []
-    }
-    slots = {
-        hands: 2,
-        chest: 1,
-        head: 1,
-        legs: 1,
-        feet: 2,
-        gear: 1000
+        hands: new Slot(2),
+        chest: new Slot(1),
+        head: new Slot(1),
+        legs: new Slot(1),
+        feet: new Slot(2),
+        gear: new Slot(1000)
     }
 
     actions = {}
@@ -279,17 +309,13 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         // TODO: more affect stuff
     }
 
-    Equip(item, slot, size) {
-        // TODO: unequipe
+    Unquip(item) {
+        this.items[item].remove(item)
+        delete this.items[item]
+    }
 
-        if (this.gear[slot].length + size <= this.slots[slot]) {
-            for (var i = 0; i < size; i++) {
-                this.gear[slot].push(item)
-            }
-            return true
-        } else {
-            return false
-        }
+    Equip(item, slot) {
+        return this.gear[slot].add(item)
     }
 
     // graphics
@@ -347,7 +373,13 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     RenderGear() {
-        return <span>gear</span>
+        return (
+            <span>
+                { Object.keys(this.gear).map((slot) => {
+                    return <div key={slot}>- {slot}:{this.gear[slot].render()}</div>
+                }) }
+            </span>
+        )
     }
 
     RenderSkills() {

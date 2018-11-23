@@ -7,7 +7,7 @@ let ManaPool = (superclass) => class extends superclass {
 
             this.hp += hp
 
-            if (this.hp < 0) {
+            if (this.hp <= 0) {
                 this.Die()
             }
 

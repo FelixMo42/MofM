@@ -48,7 +48,7 @@ export default class Controller {
     // graphics
 
     static OnMouseDown(pos) {
-        if (this.map.player.controller !== "player") {
+        if (!this.map || this.map.player.controller !== "player") {
             return
         }
         if (this.action && this.map.player === this.action.Player()) {
@@ -57,13 +57,13 @@ export default class Controller {
     }
 
     static OnMouseMoved(pos) {
-        if (this.map.player.controller !== "player") {
+        if (!this.map || this.map.player.controller !== "player") {
             return
         }
     }
 
     static OnKeyPress(key) {
-        if (this.map.player.controller !== "player") {
+        if (!this.map || this.map.player.controller !== "player") {
             return
         }
         if (key === "Enter") {
