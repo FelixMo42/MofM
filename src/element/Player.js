@@ -1,12 +1,10 @@
 import React from 'react'
-import Vec2 from '../util/Vec2'
 import Controller from '../util/Controller'
 
 import Base from "../component/Base"
 import ManaPool from '../component/ManaPool'
 import HealthPool from '../component/HealthPool'
 import Interface from '../component/Interface'
-import Graphics from '../component/Graphics'
 
 import Skill, { Skills } from "./Skill"
 import Action, { Actions } from "./Action"
@@ -190,12 +188,23 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
     }
 
+    MaxMoves(name, amu) {
+        if (name) {
+            if (amu) {
+                this.max_moves[name] = Math.max(this.max_moves[name] + amu, 0)
+            }
+            return this.max_moves[name]
+        } else {
+            return this.max_moves
+        }
+    }
+
     // functions
 
     Turn() {
         this.stack = []
         this.turn = true
-        console.log(this)
+        console.debug(this.name + " starts their turn")
 
         // TODO: regen HP
         // TODO: regen MP, using dynamic system
@@ -204,7 +213,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
         // regen moves
         for (var k in this.moves) {
-            this.Moves(k, this.max_moves[k])
+            this.Moves(k, this.MaxMoves(k))
         }
 
         // AI
@@ -221,12 +230,15 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
                 this.EndTurn()
                 return true
             })
+        } else if (this.controller === "player") {
+            Controller.Action( this.Action( Actions["move"] ) )
         }
 
         this.UpdateHTML()
     }
 
     EndTurn() {
+        console.debug(this.name + " ends their turn")
         this.turn = false
         this.UpdateHTML()
         this.Map().NextTurn()

@@ -113,21 +113,26 @@ export default class Map extends Interface(Base) {
         }
     }
 
-    PutTile(tile, x, y) {
-        // TODO: put tile
+    PutTile(tile, pos) {
+        var old = this.Tile(pos)
+        for (var k in tile) {
+            old[k] = tile[k]
+        }
     }
 
-    SetTile(tile, sx, sy, ex, ey) {
-        // TODO: set tile
+    SetTile(tile, start, end) {
+        if (tile instanceof Tile) {
+            tile = tile.id
+        }
+        Vec2.forEach(start, end, (pos) => {
+            this.PutTile(Tiles[tile].Clone(), pos)
+        })
     }
 
     // functions
 
     NextTurn() {
         if (this.players.length === 0) { return } // TODO: empty world bug
-        if (this.player) {
-            //console.debug(this.player.name + " ended his turn")
-        }
         var pos = this.turn % this.players.length
         if (pos === 0) {
             // TODO: tile mana spread
@@ -175,9 +180,11 @@ export default class Map extends Interface(Base) {
     }
 
     OnMouseMoved(pos) {
+        Controller.OnMouseMoved(pos)
     }
 
     OnKeyPress(key) {
+        Controller.OnKeyPress(key)
     }
 }
 

@@ -20,15 +20,15 @@ export default class Controller {
         if (this.mode === "auto") {
             return true
         } else if (this.mode === "smooth") {
-            for (var k in player.Moves()) {
-                if (player.Moves(k) == 0) {
+            for (var move in player.Moves()) {
+                if (player.Moves(move) === 0) {
                     return true
                 }
             }
             return false
         } else if (this.mode === "combat") {
-            for (var k in player.Moves()) {
-                if (player.Moves(k) != 0) {
+            for (var maxmove in player.Moves()) {
+                if (player.Moves(maxmove) !== 0) {
                     return false
                 }
             }
@@ -48,19 +48,28 @@ export default class Controller {
     // graphics
 
     static OnMouseDown(pos) {
-        if (!this.action || this.map.player !== this.action.Player() || this.map.player.controller !== "player") {
+        if (this.map.player.controller !== "player") {
             return
         }
-        this.DoAction(this.action, pos)
+        if (this.action && this.map.player === this.action.Player()) {
+            this.DoAction(this.action, pos)
+        }
     }
 
-    static OnMouseMove(pos) {
-
+    static OnMouseMoved(pos) {
+        if (this.map.player.controller !== "player") {
+            return
+        }
     }
 
     static OnKeyPress(key) {
-
+        if (this.map.player.controller !== "player") {
+            return
+        }
+        if (key === "Enter") {
+            this.map.player.EndTurn()
+        }
     }
 }
 
-Controller.Mode("smooth")
+Controller.Mode("combat")

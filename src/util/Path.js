@@ -62,13 +62,18 @@ function addNeighbours(map, opened, closed, node, end, mode) {
         (pos) => {
             if ((pos.x !== node.pos.x || pos.y !== node.pos.y) && !get(closed, pos)) {
                 var d = Vec2.dist(pos , end)
-                add(open(map, pos, mode) && opened || closed, {
+                var data = {
                     pos: pos,
                     s: f,
                     d: d,
                     t: d + f,
-                    p: node,
-                })
+                    p: node
+                }
+                if (open(map, pos, mode)) {
+                    add(opened, data)
+                } else {
+                    add(closed, data)
+                }
             }
         }
     )

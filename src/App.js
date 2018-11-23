@@ -4,7 +4,7 @@ import './App.css'
 import Game from './tag/Game'
 import Vec2 from './util/Vec2'
 
-import Structor from './element/Structor'
+//import Structor from './element/Structor'
 import Item from './element/Item'
 import Skill from './element/Skill'
 import Action from './element/Action'
@@ -19,9 +19,12 @@ var swordsmenship = new Skill({name: "swordsmenship"})
 
 // create actions //
 
-var move = new Action({name: "move", range: 1, cost: {
+var move = new Action({
+    name: "move",
+    range: 1,
+    cost: {
     moves: {move: -1}
-}})
+}, cheak: (self, pos) => {return self.Map().Tile(pos).Walkable()}})
 move.AddEffect({
     style: "self",
     player: {
@@ -46,10 +49,7 @@ pickup.AddEffect({
     }
 })
 
-var slice = new Action({name: "slice"})
-slice.AddEffect({
-
-})
+// create items //
 
 var sword = new Item({name: "sword"})
 sword.AddEffect({
@@ -76,10 +76,12 @@ ew.target = eb
 
 // set up world //
 
-var grass = new Tile()
+var grass = new Tile({color: "green"})
+var plate = new Tile({color: "gray", walkable: false})
 var world = new Map({name: "MoM", base: grass})
 world.PutPlayer(eb,new Vec2(0,9))
 world.PutPlayer(ew,new Vec2(9,0))
+world.SetTile(plate, new Vec2(2,2), new Vec2(7,7))
 
 //*
 

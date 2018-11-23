@@ -110,7 +110,7 @@ export default class Action extends Base {
         this.effects.push(effect)
     }
 
-    Cheak(positon) {
+    Cheak(target) {
         if (this.cost.hp) {
             if (this.cost.hp > this.player.HP()) {
                 return false
@@ -128,30 +128,33 @@ export default class Action extends Base {
                 }
             }
         }
-        if (Math.floor(Vec2.dist(this.Position(), positon)) > this.range) {
+        if (Math.floor(Vec2.dist(this.Position(), target)) > this.range) {
             return false
         }
         for (var i in this.effects) {
-            if (!styles[this.effects[i].style].cheak(this.Map(), this.Position(), positon, this.effects[i])) {
+            if (!styles[this.effects[i].style].cheak(this.Map(), this.Position(), target, this.effects[i])) {
                 return false
             }
+        }
+        if (this.cheak && !this.cheak(this, target)) {
+            return false
         }
         return true
     }
 
-    Do(positon) {
-        if (!this.Cheak(positon)) {
+    Do(target) {
+        if (!this.Cheak(target)) {
             return false
         }
 
-        console.debug(this.player.name + " uses " + this.name + " on " + positon.x + ", " + positon.y)
+        console.debug(this.player.name + " uses " + this.name + " on " + target.x + ", " + target.y)
 
-        this.target.positon = positon
+        this.target.positon = target
 
         this.player.Affect(this.cost)
 
         for (var i in this.effects) {
-            styles[this.effects[i].style].do(this.Map(), this.Position(), positon, this.effects[i])
+            styles[this.effects[i].style].do(this.Map(), this.Position(), target, this.effects[i])
         }
 
         return true
