@@ -11,9 +11,22 @@ export default class Item extends Base {
     // varibles
 
     name = "def"
+    type = "def"
 
     size = 1
+    equped = false
+
+    range = 1
+    area = 1
+    style = "ball"
+    dmg = [1, 1]
+
     effects = []
+    action = []
+
+    eq_bonus = {timer: -1}
+
+    uq_bonus = {timer: -1}
 
     // accessors
 
@@ -24,6 +37,10 @@ export default class Item extends Base {
             delete this.tile
         }
         return this.tile
+    }
+
+    Player() {
+        return this.player
     }
 
     Position() {
@@ -45,27 +62,56 @@ export default class Item extends Base {
     }
 
     Pickup(player) {
+        console.debug(player.name + " picks up " + this.name)
+
         this.tile.Item(false)
         this.player = player
 
-        player.Equip(this, "gear", 1)
+        this.player.Bonus(this.uq_bonus, true)
+        this.player.Equip(this, "gear")
 
         return this
     }
 
     Drop() {
+        console.debug(this.player.name + " dropps " + this.name)
+
         // TODO: what if tile full?
-        this.player.Unquip(this)
+
+        this.player.Bonus(this.eq_bonus, false)
+        this.player.Bonus(this.uq_bonus, false)
+
+        this.player.Unequip(this)
         this.player.Tile().Item(this)
     }
 
     Equip() {
-        this.player.Unquip(this)
-        this.player.Equip(this, this.slot, 1)
+        console.debug(this.player.name + " equips " + this.name)
+
+        this.equped = true
+
+        this.player.Unequip(this)
+        this.player.Equip(this, this.slot)
+
+        this.player.Bonus(this.eq_bonus, true)
+    }
+
+    Unequip() {
+        console.debug(this.player.name + " unequips " + this.name)
+
+        this.equped = false
+        this.player.Bonus(this.eq_bonus, false)
+        this.player.Unequip(this)
+        this.player.Equip(this, "gear")
     }
 
     AddEffect(effect) {
         this.effects.push(effect)
+    }
+
+    AddAction(action) {
+        action.item = this
+        this.actions.push(action)
     }
 
     // graphics

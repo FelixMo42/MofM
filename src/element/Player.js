@@ -30,7 +30,10 @@ class Slot {
     }
 
     remove(item) {
-        delete this.items[this.items.indexOf(item)]
+        for (var i = this.items.indexOf(item); i < this.items.length - 1; i++) {
+            this.items[i] = this.items[i + 1]
+        }
+        delete this.items[this.items.length - 1]
     }
 
     render() {
@@ -40,7 +43,11 @@ class Slot {
                     return (
                         <div key={this.items[pos].key}>
                             {this.items[pos].name}
-                            <button onClick={() => {this.items[pos].Equip()}}>E</button>
+                            {
+                                this.items[pos].equped &&
+                                <button onClick={() => {this.items[pos].Unequip()}}>U</button> ||
+                                <button onClick={() => {this.items[pos].Equip()}}>E</button>
+                            }
                             <button onClick={() => {this.items[pos].Drop()}}>D</button>
                         </div>
                     )
@@ -100,6 +107,8 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     bonuses = {
         stat: {},
         skill: {},
+        action: {},
+        list: []
     }
 
     controller = "robot"
@@ -136,11 +145,60 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         return this.lv
     }
 
-    Bonus(section, key) {
-        if (!key) {
-            return this.bonuses[section]
-        } else if (key in this.bonuses[section])  {
-            return this.bonuses[section][key]
+    Bonus(section, key = true) {
+        // TODO: hash tables
+        if (section instanceof Object && key) {
+            section.active = true
+            this.bonuses.list.push(section)
+            if (!section.timer) {section.timer = 1}
+            if (section.stat) {
+                for (var stat in section.stat) {
+                    if (!(stat in this.bonuses["stat"])) {
+                        this.bonuses["stat"][stat] = 0
+                    }
+                    this.bonuses["stat"][stat] += section.stat[stat]
+                }
+            }
+            if (section.skill) {
+                for (var skill in section.skill) {
+                    if (!(skill in this.bonuses["skill"])) {
+                        this.bonuses["skill"][skill] = 0
+                    }
+                    this.bonuses["skill"][skill] += section.skill[skill]
+                }
+            }
+            if (section.actions) {
+                for (var action in section.skill) {
+                    this.bonuses["action"][action.id] = action
+                }
+            }
+        } else if (section instanceof Object && !key && section.active) {
+            section.active = false
+
+            if (section.stat) {
+                for (var stat in section.stat) {
+                    this.bonuses["stat"][stat] -= section.stat[stat]
+                }
+            }
+            if (section.skill) {
+                for (var skill in section.skill) {
+                    this.bonuses["skill"][skill] -= section.skill[skill]
+                }
+            }
+            if (section.actions) {
+                for (var action in section.skill) {
+                    // TODO: remove actions
+                }
+            }
+            // TODO: remove from bonuses list
+        } else {
+            if (!key) {
+                return this.bonuses[section]
+            } else if (key in this.bonuses[section]) {
+                return this.bonuses[section][key]
+            } else {
+                return 0
+            }
         }
     }
 
@@ -280,6 +338,10 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
 
         if (!(action in this.actions)) {
+            if (Actions[action].skill && !(Actions[action].skill.id in this.skills)) {
+                var skill = Actions[action].skill.id
+                this.skills[skill] = Skills[skill].Clone({player: this})
+            }
             this.actions[action] = Actions[action].Clone({player: this})
         }
 
@@ -309,13 +371,16 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         // TODO: more affect stuff
     }
 
-    Unquip(item) {
+    Unequip(item) {
         this.items[item].remove(item)
         delete this.items[item]
+        this.UpdateHTML()
     }
 
     Equip(item, slot) {
-        return this.gear[slot].add(item)
+        var suc = this.gear[slot].add(item)
+        this.UpdateHTML()
+        return suc
     }
 
     // graphics
@@ -383,24 +448,30 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     RenderSkills() {
-        return <span>skills</span>
+        return (
+            <span>
+                { Object.values(this.skills).map((skill) => {
+                    return skill.Render()
+                }) }
+            </span>
+        )
     }
 
     RenderActions() {
         return (<span id="actions">
             <span>main: {this.moves.main} | move: {this.moves.move} | sub: {this.moves.sub}</span>
             <hr className="light"/>
-            { Object.keys(this.actions).map((id) =>
-                <span key={id}>
+            { Object.values(this.actions).map((action) =>
+                <span key={action.key}>
                     {this.turn && this.controller === "player" ?
                         <input type="checkbox"
-                            checked={Controller.Action() === this.actions[id]}
-                            onChange={() => {Controller.Action(this.actions[id])}}
+                            checked={Controller.Action() === action}
+                            onChange={() => {Controller.Action(action)}}
                         />
                     :
                         "- "
                     }
-                    {this.actions[id].name}
+                    {action.name}
                     <br />
                 </span>
             ) }

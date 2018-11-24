@@ -1,3 +1,5 @@
+import React from 'react'
+
 import Base from "../component/Base"
 
 const Skills = {}
@@ -35,17 +37,29 @@ export default class Skill extends Base {
         return this.lv
     }
 
-    // functions
-
-    Roll(stat) {
-        var b = 0
+    Bonus(stat, b = 0) {
         if (stat) {
             b += this.player.Stat(stat)
         }
-        if (this.player.Bonus("skill",this.id)) {
-            b += this.player.Bonus("skill",this.id)
-        }
-        return Math.floor(Math.random() * 20 + 1) + b
+        b += this.player.Bonus("skill",this.id)
+        return b
+    }
+
+    // functions
+
+    Roll(stat) {
+        return Math.floor(Math.random() * 20 + 1) + this.LV() + this.Bonus(stat)
+    }
+
+    // graphics
+
+    Render() {
+        return (
+            <span key={this.key}>
+                {this.name}: {this.LV()}
+                { this.Bonus() !== 0 &&  " +" + this.Bonus() }
+            </span>
+        )
     }
 }
 

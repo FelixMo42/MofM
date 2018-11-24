@@ -104,7 +104,7 @@ export default class Tile extends ManaPool(Base) {
     Draw(ctx) {
         ctx.fillStyle = this.color
         ctx.fillRect(this.pos.x * ctx.size, this.pos.y * ctx.size, ctx.size, ctx.size)
-        ctx.strokeStyle = "#000000"
+        ctx.strokeStyle = "black"
         ctx.strokeRect(this.pos.x * ctx.size, this.pos.y * ctx.size, ctx.size, ctx.size)
     }
 }
