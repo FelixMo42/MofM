@@ -12,7 +12,7 @@ import Action, { Actions } from "./Action"
 import Draggable from 'react-draggable'
 import Path from '../util/Path.js'
 
-const Players = {}
+export const Players = {}
 
 class Slot {
     amu = 0
@@ -98,7 +98,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         str: 0, con: 0, dex: 0
     }
     moves = {
-        move: 2,
+        move: 5,
         main: 1,
         sub: 2
     }
@@ -222,10 +222,6 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
     }
 
-    Skills() {
-        return this.skills
-    }
-
     Skill(skill) {
         if (skill instanceof Skill) {
             skill = skill.id
@@ -287,6 +283,14 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
     }
 
+    DR() {
+        return this.Skill( Skills["defence"] ).Roll("con", 0)
+    }
+
+    Dodge() {
+        return this.Skill( Skills["dodge"] ).Roll("dex")
+    }
+
     // functions
 
     Turn() {
@@ -338,10 +342,6 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
 
         if (!(action in this.actions)) {
-            if (Actions[action].skill && !(Actions[action].skill.id in this.skills)) {
-                var skill = Actions[action].skill.id
-                this.skills[skill] = Skills[skill].Clone({player: this})
-            }
             this.actions[action] = Actions[action].Clone({player: this})
         }
 
@@ -354,11 +354,15 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     Affect(effect, sourcePos, targetPos) {
+        var aim = undefined
+        if (effect.skill) {
+            aim = effect.skill.Roll(effect.stat)
+        }
         if (effect.hp) {
-            this.HP(effect.hp)
+            this.HP(effect.hp, aim)
         }
         if (effect.mp) {
-            this.MP(effect.mp)
+            this.MP(effect.mp, aim)
         }
         if (effect.push) {
             this.Position(effect.target.Position()) // TODO: make it not teleportation
@@ -478,8 +482,6 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         </span>)
     }
 }
-
-export { Players }
 
 // TODO: hp regen system
 // TODO: weapon equipment stuff

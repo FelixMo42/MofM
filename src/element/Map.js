@@ -10,7 +10,7 @@ import Player, { Players } from "./Player"
 import Item, { Items } from "./Item"
 import Structor, { Structors } from "./Structor"
 
-const Maps = {}
+export const Maps = {}
 
 export default class Map extends Interface(Base) {
     constructor(params) {
@@ -199,5 +199,3 @@ export default class Map extends Interface(Base) {
         Controller.OnKeyPress(key)
     }
 }
-
-export { Maps }

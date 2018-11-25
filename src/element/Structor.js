@@ -1,6 +1,6 @@
 import Base from "../component/Base"
 
-const Structors = {}
+export const Structors = {}
 
 export default class Structor extends Base {
     constructor(params) {
@@ -51,7 +51,5 @@ export default class Structor extends Base {
         ctx.fillRect(pos.x * ctx.size + add, pos.y * ctx.size + add, size, size)
     }
 }
-
-export { Structors }
 
 // TODO: building and destroying

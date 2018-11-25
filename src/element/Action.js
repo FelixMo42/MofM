@@ -1,7 +1,7 @@
 import Base from "../component/Base"
 import Vec2 from "../util/Vec2"
 
-const Actions = {}
+export const Actions = {}
 
 // TODO: add line and cone to styles
 
@@ -38,6 +38,14 @@ export default class Action extends Base {
         this.Setup(params)
     }
 
+    Setup(params) {
+        super.Setup(params)
+
+        for (var i = 0; i < this.effects.length; i++) {
+            this.SetupEffect(this.effects[i])
+        }
+    }
+
     name = "def"
     style = "click"
     effects = []
@@ -68,32 +76,14 @@ export default class Action extends Base {
 
     // functions
 
-    SetSources(effect) {
+    SetData(effect) {
         effect.source = this
         effect.target = this.target
-        if (effect.player) {
-            effect.player.source = this
-            effect.player.target = this.target
-        }
-        if (effect.item) {
-            effect.item.source = this
-            effect.item.target = this.target
-        }
-        if (effect.structor) {
-            effect.structor.source = this
-            effect.structor.target = this.target
-        }
-    }
 
-    Setup(params) {
-        super.Setup(params)
-
-        for (var i = 0; i < this.effects.length; i++) {
-            this.SetSources(this.effects[i])
+        if (!effect.skill && this.skill) {
+            effect.skill = this.player.Skill(this.skill)
         }
-    }
 
-    AddEffect(effect) {
         if (!effect.style) {
             effect.style = this.style
         }
@@ -103,10 +93,25 @@ export default class Action extends Base {
         if (!effect.area) {
             effect.area = this.area
         }
-        if (!effect.skill && this.skill) {
-            effect.skill = this.skill
+        if (!effect.stat) {
+            effect.stat = this.stat
         }
+    }
 
+    SetupEffect(effect) {
+        this.SetData(effect)
+        if (effect.player) {
+            this.SetData(effect.player)
+        }
+        if (effect.item) {
+            this.SetData(effect.item)
+        }
+        if (effect.structor) {
+            this.SetData(effect.structor)
+        }
+    }
+
+    AddEffect(effect) {
         this.effects.push(effect)
     }
 
@@ -160,7 +165,5 @@ export default class Action extends Base {
         return true
     }
 }
-
-export { Actions }
 
 // TODO: balance system

@@ -15,6 +15,8 @@ import Map from "./element/Map"
 // create skills //
 
 var handToHand = new Skill({name: "hand-to-hand"})
+var defence = new Skill({name: "defence"})
+var dodge = new Skill({name: "dodge"})
 
 // create actions //
 

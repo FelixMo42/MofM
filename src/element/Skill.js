@@ -2,7 +2,7 @@ import React from 'react'
 
 import Base from "../component/Base"
 
-const Skills = {}
+export const Skills = {}
 
 export default class Skill extends Base {
     constructor(params) {
@@ -41,14 +41,14 @@ export default class Skill extends Base {
         if (stat) {
             b += this.player.Stat(stat)
         }
-        b += this.player.Bonus("skill",this.id)
+        b += this.player.Bonus("skill", this.id)
         return b
     }
 
     // functions
 
-    Roll(stat) {
-        return Math.floor(Math.random() * 20 + 1) + this.LV() + this.Bonus(stat)
+    Roll(stat, die = 20) {
+        return Math.floor(Math.random() * die + 1) + this.LV() + this.Bonus(stat)
     }
 
     // graphics
@@ -62,7 +62,5 @@ export default class Skill extends Base {
         )
     }
 }
-
-export { Skills }
 
 // TODO: skill tree

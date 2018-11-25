@@ -1,6 +1,6 @@
 import Base from "../component/Base"
 
-const Items = {}
+export const Items = {}
 
 export default class Item extends Base {
     constructor(params) {
@@ -106,12 +106,12 @@ export default class Item extends Base {
     }
 
     AddEffect(effect) {
-        this.effects.push(effect)
+        // TODO: make add effect work
     }
 
     AddAction(action) {
         action.item = this
-        this.actions.push(action)
+        // TODO: make add action work
     }
 
     // graphics
@@ -125,5 +125,3 @@ export default class Item extends Base {
         ctx.fillRect(pos.x * ctx.size + add, pos.y * ctx.size + add, size, size)
     }
 }
-
-export { Items }

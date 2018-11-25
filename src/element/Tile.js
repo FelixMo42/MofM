@@ -1,7 +1,7 @@
 import Base from "../component/Base"
 import ManaPool from '../component/ManaPool'
 
-const Tiles = {}
+export const Tiles = {}
 
 export default class Tile extends ManaPool(Base) {
     constructor(params) {
@@ -108,5 +108,3 @@ export default class Tile extends ManaPool(Base) {
         ctx.strokeRect(this.pos.x * ctx.size, this.pos.y * ctx.size, ctx.size, ctx.size)
     }
 }
-
-export { Tiles }
