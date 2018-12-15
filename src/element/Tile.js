@@ -1,17 +1,9 @@
 import Base from "../component/Base"
 import ManaPool from '../component/ManaPool'
 
-export const Tiles = {}
-
 export default class Tile extends ManaPool(Base) {
-    constructor(params) {
-        super(Tiles)
-        this.Setup(params)
-    }
-
     // varibles
 
-    name = "def"
     color = "white"
 
     mp = 100
@@ -23,56 +15,60 @@ export default class Tile extends ManaPool(Base) {
     // accessors
 
     Map() {
-        return this.map
+        return this.node.map
     }
 
     Position() {
-        return this.pos
+        return this.node.pos
+    }
+
+    Node() {
+        return this.node
     }
 
     Player(player) {
         if (player) {
-            this.player = player
+            this.node.player = player
         } else if (this.player && player === false) {
-            delete this.player
+            delete this.node.player
         }
-        return this.player
+        return this.node.player
     }
 
     Item(item) {
         if (item) {
-            this.item = item
+            this.node.item = item
             item.Tile(this)
-        } else if (this.item && item === false) {
-            this.item.Tile(false)
-            delete this.item
+        } else if (this.node.item && item === false) {
+            this.node.item.Tile(false)
+            delete this.node.item
         }
-        return this.item
+        return this.node.item
     }
 
     Structor(structor) {
         if (structor) {
             structor.Tile(this)
-            this.structor = structor
-        } else if (this.structor && structor === false) {
-            this.structor.Tile(false)
-            delete this.structor
+            this.node.structor = structor
+        } else if (this.node.structor && structor === false) {
+            this.node.structor.Tile(false)
+            delete this.node.structor
         }
-        return this.structor
+        return this.node.structor
     }
 
     // functions
 
     Affect(effect) {
         if (!effect.time || effect.time === 0) {
-            if (effect.player && this.player) {
-                this.player.Affect(effect.player)
+            if (effect.player && this.node.player) {
+                this.node.player.Affect(effect.player)
             }
-            if (effect.item && this.item) {
-                this.item.Affect(effect.item)
+            if (effect.item && this.node.item) {
+                this.node.item.Affect(effect.item)
             }
-            if (effect.structor && this.structor) {
-                this.structor.Affect(effect.structor)
+            if (effect.structor && this.node.structor) {
+                this.node.structor.Affect(effect.structor)
             }
             // TODO: stuff that effects tile
         } else {
@@ -89,10 +85,10 @@ export default class Tile extends ManaPool(Base) {
     Walkable(mode) {
         // TODO: cheak mode
 
-        if (this.player) {
+        if (this.node.player) {
             return false
         }
-        if (this.structor && !this.structor.Walkable(mode)) {
+        if (this.node.structor && !this.node.structor.Walkable(mode)) {
             return false
         }
 
@@ -103,8 +99,14 @@ export default class Tile extends ManaPool(Base) {
 
     Draw(ctx) {
         ctx.fillStyle = this.color
-        ctx.fillRect(this.pos.x * ctx.size, this.pos.y * ctx.size, ctx.size, ctx.size)
+        ctx.fillRect(
+            this.node.pos.x * ctx.size, this.node.pos.y * ctx.size,
+            ctx.size, ctx.size
+        )
         ctx.strokeStyle = "black"
-        ctx.strokeRect(this.pos.x * ctx.size, this.pos.y * ctx.size, ctx.size, ctx.size)
+        ctx.strokeRect(
+            this.node.pos.x * ctx.size, this.node.pos.y * ctx.size,
+            ctx.size, ctx.size
+        )
     }
 }

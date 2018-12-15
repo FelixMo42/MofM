@@ -14,83 +14,148 @@ import Map from "./element/Map"
 
 // create skills //
 
-var handToHand = new Skill({name: "hand-to-hand"})
-var defence = new Skill({name: "defence"})
-var dodge = new Skill({name: "dodge"})
+class Defence extends Skill {}
+Defence.Register()
+
+class HandToHand extends Skill {}
+HandToHand.Register()
+
+class Gunmanship extends Skill {}
+Gunmanship.Register()
 
 // create actions //
 
-var move = new Action({name: "move", cost: {moves: {move: -1}}, cheak: (self, pos) => {
-    return self.Map().Tile(pos).Walkable()
-}})
-move.AddEffect({
-    style: "self",
-    player: {
-        push: -1
+class Move extends Action {
+    cost = {
+        moves: {move: -1}
     }
-})
 
-var punch = new Action({name: "punch", skill: handToHand, cost: {moves: {main: -1}}})
-punch.AddEffect({
-    style: "ball",
-    player: {
-        hp: [-10,-5]
-    }
-})
+    style = "self"
 
-var pickup = new Action({name: "pickup", cost: {moves: {sub: -1}}})
-pickup.AddEffect({
-    item: {
-        pickup: true
+    effect = {
+        player: {
+            push: -1
+        }
     }
-})
+
+    Cheak(target) {
+        return super.Cheak(target) && this.Map().Tile(target).Walkable()
+    }
+}
+Move.Register()
+
+class Pickup extends Action {
+    cost = {moves: {sub: -1}}
+
+    effect = {
+        item: {
+            pickup: true
+        }
+    }
+}
+Pickup.Register()
+
+class Punch extends Action {
+    skill = HandToHand
+    cost = {moves: {main: -1}}
+    effect = {
+        style: "ball",
+        player: {
+            hp: [-10,-5]
+        }
+    }
+}
+Punch.Register()
+
+class Shoot extends Action {
+    skill = Gunmanship
+    cost = {moves: {main: -1}}
+    range = 10
+    style = "ball"
+    effect = {
+        player: {
+            hp: [-10,-5]
+        }
+    }
+}
+Shoot.Register()
+
+Gunmanship.Action(Shoot)
+
+class SuperShot extends Action {
+    skill = Gunmanship
+    cost = {moves: {main: -1}, mp: -10}
+    effect = {}
+}
+
+Gunmanship.Action(SuperShot)
 
 // create items //
 
-var gun = new Item({name: "gun", color: "brown", slot: "hands"})
+class Gun extends Item {
+    color = "brown"
+    slot = "hands"
+}
 
 // create players //
 
-var eb = new Player({name: "Eden Black"})
-eb.Learn(move)
-eb.Learn(punch)
-eb.Learn(pickup)
-eb.controller = "player"
-eb.color = "black"
+var eb = new Player({
+    name: "Eden Black",
+    controller: "player",
+    color: "black"
+})
+eb.Learn(Move)
+eb.Learn(Punch)
+eb.Learn(Shoot)
+eb.Learn(Pickup)
 
-var ew = new Player({name: "Eden White"})
-ew.Learn(move)
-ew.Learn(punch)
-eb.Learn(pickup)
-ew.color = "white"
+var ew = new Player({
+    name: "Eden White",
+    color: "white"
+})
+ew.Learn(Move)
+ew.Learn(Punch)
+eb.Learn(Pickup)
 
 eb.target = ew
 ew.target = eb
 
 // create tile //
 
-var grass = new Tile({color: "green"})
-var floor = new Tile({color: "gray"})
+class Grass extends Tile {
+    color = "green"
+}
+Grass.Register()
+
+class Floor extends Tile {
+    color = "gray"
+}
+Floor.Register()
 
 // create structors //
 
-var wall = new Structor({color: "black", walkable: false})
+class Wall extends Structor {
+    color = "black"
+    walkable = false
+}
+Wall.Register()
 
 // set up world //
 
-var world = new Map({name: "MoM", base: grass})
+var world = new Map({name: "MoM"})
 
-world.SetTile(floor, new Vec2(2,2), new Vec2(7,7))
+world.SetTile(Grass, new Vec2(0,0), new Vec2(9,9))
+world.SetTile(Floor, new Vec2(2,2), new Vec2(7,7))
 
-world.SetStructor(wall, new Vec2(2,2), new Vec2(7,7))
+world.SetStructor(Wall, new Vec2(2,2), new Vec2(7,7))
 world.SetStructor(false, new Vec2(3,3), new Vec2(6,6))
 world.SetStructor(false, new Vec2(4,2), new Vec2(5,7))
 world.SetStructor(false, new Vec2(2,4), new Vec2(7,5))
 
-world.SetItem(gun, new Vec2(1,8))
+world.SetItem(Gun, new Vec2(1,8))
 
-world.PutPlayer(eb,new Vec2(0,9))
-world.PutPlayer(ew,new Vec2(9,0))
+//world.SetPlayer(ew,new Vec2(9,0))
+world.SetPlayer(eb,new Vec2(0,9))
 
 // render world //
 
@@ -99,3 +164,5 @@ export default class App extends React.Component {
         return <Game world={world} />
     }
 }
+
+// */

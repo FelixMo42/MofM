@@ -13,11 +13,11 @@ export default class Vec2 {
         this.y = y
     }
 
-    static dist(a, b) {
+    static Dist(a, b) {
         return sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
     }
 
-    static forEach(a, b, func) {
+    static ForEach(a, b, func) {
         for (var x = a.x; x <= b.x; x++) {
             for (var y = a.y; y <= b.y; y++) {
                 func(new Vec2(x, y))

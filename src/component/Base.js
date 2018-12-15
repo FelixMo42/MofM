@@ -1,42 +1,45 @@
 import GlobalKey from "../util/GlobKey"
 
-var id = {}
+const ids = {}
+const list = {}
 
 export default class Base {
-    constructor(list) {
-        var name = this.constructor.name
-        if (!(name in id)) {
-            id[name] = 0
+    constructor(params) {
+        this.key = GlobalKey.NewKey()
+
+        for (var key in params) {
+            this[key] = params[key]
         }
-        this.id = name.charAt(0).toUpperCase() + id[name]
-        id[name] += 1
-
-        list[this.id] = this
-
-        this.globalList = list
-
-        this.key = GlobalKey.getNewKey()
     }
 
-	Setup(params) {
-        if (params) {
-			Object.keys(params).map((key) => {
-				return (this[key] = params[key])
-			})
+    static Register(name) {
+        var type = this.__proto__.name.charAt(0).toUpperCase()
+
+        if (!(type in list)) {
+            list[type] = {}
         }
 
-        if (!(this.name in this.globalList)) {
-            this.globalList[this.name] = this // TODO: remove when name system not in use
+        if (!(type in ids)) {
+            ids[type] = 0
         }
-	}
 
-	Clone(params) {
-		var copy = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-        copy.key = GlobalKey.getNewKey()
-        copy.Setup(params)
-		return copy
-	}
+        var id = type + ids[type]
+        ids[type] += 1
+
+        this.id = id
+        this.prototype.id = id
+
+        list[type][id] = this
+
+        if (this.name) {
+            // TODO: cheak name formating
+            // TODO: remove when name system removed
+            list[type][this.name] = this
+        }
+    }
+
+    static Get(id) {
+        console.log(list)
+        return list[this.name.charAt(0).toUpperCase()][id]
+    }
 }
-
-// TODO: ui
-// TODO: loading stuff

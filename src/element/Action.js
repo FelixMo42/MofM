@@ -1,7 +1,8 @@
-import Base from "../component/Base"
+import React from "react"
 import Vec2 from "../util/Vec2"
+import Controller from "../util/Controller"
 
-export const Actions = {}
+import Base from "../component/Base"
 
 // TODO: add line and cone to styles
 
@@ -11,7 +12,8 @@ const styles = {
             return Math.floor(Vec2.dist(sourcePos, targetPos)) <= effect.range
         },
         do: (map, sourcePos, targetPos, effect) => {
-            map.Tile(targetPos).Affect(effect, sourcePos, targetPos) // TODO: implement area
+            map.Tile(targetPos).Affect(effect, sourcePos, targetPos)
+            // TODO: implement area
         }
     },
     click: {
@@ -33,20 +35,6 @@ const styles = {
 }
 
 export default class Action extends Base {
-    constructor(params) {
-        super(Actions)
-        this.Setup(params)
-    }
-
-    Setup(params) {
-        super.Setup(params)
-
-        for (var i = 0; i < this.effects.length; i++) {
-            this.SetupEffect(this.effects[i])
-        }
-    }
-
-    name = "def"
     style = "click"
     effects = []
     cost = {}
@@ -62,7 +50,7 @@ export default class Action extends Base {
 
     // accessors
 
-    Player() {
+    Player(player) {
         return this.player
     }
 
@@ -111,10 +99,6 @@ export default class Action extends Base {
         }
     }
 
-    AddEffect(effect) {
-        this.effects.push(effect)
-    }
-
     Cheak(target) {
         if (this.cost.hp) {
             if (this.cost.hp > this.player.HP()) {
@@ -141,9 +125,6 @@ export default class Action extends Base {
                 return false
             }
         }
-        if (this.cheak && !this.cheak(this, target)) {
-            return false
-        }
         return true
     }
 
@@ -163,6 +144,25 @@ export default class Action extends Base {
         }
 
         return true
+    }
+
+    // graphics
+
+    Render() {
+        return (
+            <span key={this.key}>
+                {this.player.turn && this.player.controller === "player" ? this.RenderCheakBox() : "- "}
+                {this.name}
+                <br />
+            </span>
+        )
+    }
+
+    RenderCheakBox() {
+        return <input type="checkbox"
+            checked={Controller.Action() === this}
+            onChange={() => {Controller.Action(this)}}
+        />
     }
 }
 

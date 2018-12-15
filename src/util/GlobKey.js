@@ -1,7 +1,7 @@
 var key = 0
 
 export default {
-    getNewKey: function() {
+    NewKey: function() {
         key++
         return key - 1
     }

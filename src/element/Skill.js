@@ -2,17 +2,22 @@ import React from 'react'
 
 import Base from "../component/Base"
 
+import Action from "./Action"
+
 export const Skills = {}
 
 export default class Skill extends Base {
     constructor(params) {
-        super(Skills)
-        this.Setup(params)
+        super(params)
+        this.actions = this.actions || []
+    }
+
+    static Action(action) {
+        this.__proto__.actions = this.__proto__.actions || {}
+        this.__proto__.actions[action.id] = action
     }
 
     // varibles
-
-    name = "def"
 
     xp = 0
     lv = 0
@@ -45,10 +50,20 @@ export default class Skill extends Base {
         return b
     }
 
+    Action(action) {
+        if (action) {
+            if (action instanceof Action) {
+                action = action.id
+            }
+            return this.actions[action]
+        }
+        return this.actions
+    }
+
     // functions
 
     Roll(stat, die = 20) {
-        return Math.floor(Math.random() * die + 1) + this.LV() + this.Bonus(stat)
+        return Math.floor(Math.random() * (die - 1) + 1) + this.LV() + this.Bonus(stat)
     }
 
     // graphics
@@ -57,7 +72,8 @@ export default class Skill extends Base {
         return (
             <span key={this.key}>
                 {this.name}: {this.LV()}
-                { this.Bonus() !== 0 &&  " +" + this.Bonus() }
+                {this.Bonus() !== 0 &&  " +" + this.Bonus()}
+                <br />
             </span>
         )
     }

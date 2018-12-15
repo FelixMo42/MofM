@@ -1,18 +1,15 @@
 import React from 'react'
 import Controller from '../util/Controller'
+import Draggable from 'react-draggable'
+import Path from '../util/Path.js'
 
 import Base from "../component/Base"
 import ManaPool from '../component/ManaPool'
 import HealthPool from '../component/HealthPool'
 import Interface from '../component/Interface'
 
-import Skill, { Skills } from "./Skill"
-import Action, { Actions } from "./Action"
-
-import Draggable from 'react-draggable'
-import Path from '../util/Path.js'
-
-export const Players = {}
+import Skill from "./Skill"
+import Action from "./Action"
 
 class Slot {
     amu = 0
@@ -59,8 +56,7 @@ class Slot {
 
 export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     constructor(params) {
-        super(Players)
-        this.Setup(params)
+        super(params)
 
         this.max_moves = {}
         for (var k in this.moves) {
@@ -110,8 +106,6 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         action: {},
         list: []
     }
-
-    controller = "robot"
 
     // accessors
 
@@ -223,15 +217,11 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     Skill(skill) {
-        if (skill instanceof Skill) {
-            skill = skill.id
-        }
-
         if (!(skill in this.skills)) {
-            this.skills[skill] = Skills[skill].Clone({player: this})
+            this.skills[skill] = new skill({player: this})
         }
 
-        return this.skills[skill]
+        return this.skills[skill.id]
     }
 
     Tile(tile) {
@@ -284,11 +274,11 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     DR() {
-        return this.Skill( Skills["defence"] ).Roll("con", 0)
+        return this.Skill( Skill.Get("defence") ).Roll("con", 0)
     }
 
     Dodge() {
-        return this.Skill( Skills["dodge"] ).Roll("dex")
+        return this.Skill( Skill.Get("dodge") ).Roll("dex")
     }
 
     // functions
@@ -313,17 +303,17 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             if (this.target.HP() > 0) {
                 var path = Path.find(this.Map(), this.Position(), this.target.Position())
                 while (path.length > 0 && this.moves.move > 0) {
-                    this.Action( Actions["move"] ).Do(path[0])
+                    this.Action( Action.Get("Move") ).Do(path[0])
                     path.shift()
                 }
-                this.Action( Actions["punch"] ).Do(this.target.Position())
+                this.Action( Action.Get("Punch") ).Do(this.target.Position())
             }
             this.stack.push(() => {
                 this.EndTurn()
                 return true
             })
         } else if (this.controller === "player") {
-            Controller.Action( this.Action( Actions["move"] ) )
+            Controller.Action( this.Action( Action.Get("Move") ) )
         }
 
         this.UpdateHTML()
@@ -342,7 +332,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
 
         if (!(action in this.actions)) {
-            this.actions[action] = Actions[action].Clone({player: this})
+            this.actions[action] = new action({player: this})
         }
 
         return this.actions[action]
@@ -365,7 +355,8 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             this.MP(effect.mp, aim)
         }
         if (effect.push) {
-            this.Position(effect.target.Position()) // TODO: make it not teleportation
+            this.Position(effect.target.Position())
+            // TODO: make it not teleportation
         }
         if (effect.moves) {
             for (var k in effect.moves) {
@@ -454,9 +445,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     RenderSkills() {
         return (
             <span>
-                { Object.values(this.skills).map((skill) => {
-                    return skill.Render()
-                }) }
+                { Object.values(this.skills).map((skill) => skill.Render()) }
             </span>
         )
     }
@@ -465,20 +454,10 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         return (<span id="actions">
             <span>main: {this.moves.main} | move: {this.moves.move} | sub: {this.moves.sub}</span>
             <hr className="light"/>
-            { Object.values(this.actions).map((action) =>
-                <span key={action.key}>
-                    {this.turn && this.controller === "player" ?
-                        <input type="checkbox"
-                            checked={Controller.Action() === action}
-                            onChange={() => {Controller.Action(action)}}
-                        />
-                    :
-                        "- "
-                    }
-                    {action.name}
-                    <br />
-                </span>
-            ) }
+            { Object.values(this.actions).map((action) => action.Render()) }
+            { Object.values(this.skills).map((skill) => {
+                { Object.values(skill.actions).map((action) => console.log(action)) }
+            }) }
         </span>)
     }
 }

@@ -28,7 +28,7 @@ function find(map, start, end, mode) {
     add(opened, {
         pos: start,
         s: 0,
-        t: Vec2.dist(start, end)
+        t: Vec2.Dist(start, end)
     })
 
     while (true) {
@@ -61,7 +61,7 @@ function addNeighbours(map, opened, closed, node, end, mode) {
         new Vec2(node.pos.x + 1, node.pos.y + 1),
         (pos) => {
             if ((pos.x !== node.pos.x || pos.y !== node.pos.y) && !get(closed, pos)) {
-                var d = Vec2.dist(pos , end)
+                var d = Vec2.Dist(pos, end)
                 var data = {
                     pos: pos,
                     s: f,

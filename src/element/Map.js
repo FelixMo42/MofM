@@ -5,22 +5,23 @@ import Controller from '../util/Controller'
 import Base from "../component/Base"
 import Interface from "../component/Interface"
 
-import Tile, { Tiles } from "./Tile"
-import Player, { Players } from "./Player"
-import Item, { Items } from "./Item"
-import Structor, { Structors } from "./Structor"
-
-export const Maps = {}
+import Tile from "./Tile"
+import Player from "./Player"
+import Item from "./Item"
+import Structor from "./Structor"
 
 export default class Map extends Interface(Base) {
     constructor(params) {
-        super(Maps)
-        this.Setup(params)
+        super(params)
 
         for (var x = 0; x < this.width; x++) {
-            this.tiles[x] = []
+            this[x] = this[x] || []
             for (var y = 0; y < this.height; y++) {
-                this.tiles[x][y] = this.base.Clone({pos: new Vec2(x, y), map: this})
+                this[x][y] = {
+                    pos: new Vec2(x, y),
+                    map: this
+                }
+                this[x][y].tile = new this.base({node: this[x][y]})
             }
         }
     }
@@ -37,32 +38,30 @@ export default class Map extends Interface(Base) {
 
     turn = 1
 
-    base = new Tile()
+    base = Tile
 
     // accessors
 
-    Tile(pos) {
+    Node(pos) {
         if (pos.x >= 0 && pos.y >= 0 && pos.x < this.width && pos.y < this.height) {
-            return this.tiles[pos.x][pos.y]
+            return this[pos.x][pos.y]
         }
+    }
+
+    Tile(pos) {
+        return this.Node(pos).tile
     }
 
     // creater functions
 
-    PutPlayer(player, pos) {
-        this.players.push(player)
-        player.Tile(this.Tile(pos))
-    }
-
     SetPlayer(player, start, end) {
         if (player instanceof Player) {
-            player = player.id
-        }
-
-        for (var x = Math.min(start.x, end.x); x < Math.max(start.x, end.x); x++) {
-            for (var y = Math.min(start.y, end.y); x < Math.min(start.y, end.y); y++) {
-                this.PutPlayer(Players[player].Clone(), x, y)
-            }
+            this.players.push(player)
+            player.Tile(this.Tile(start))
+        } else {
+            Vec2.ForEach(start, end, (pos) => {
+                this.SetPlayer(new player(), pos)
+            })
         }
     }
 
@@ -78,67 +77,53 @@ export default class Map extends Interface(Base) {
         this.UpdateHTML()
     }
 
-    PutItem(item, pos) {
-        this.Tile(pos).Item(item)
-    }
-
     SetItem(item, start, end) {
         if (item instanceof Item) {
-            item = item.id
-        }
-
-        end = end || start
-
-        if (!item) {
-            Vec2.forEach(start, end, (pos) => {
-                this.PutItem(false, pos)
-            })
+            this.Tile(start).Item(item)
         } else {
-            Vec2.forEach(start, end, (pos) => {
-                this.PutItem(Items[item].Clone(), pos)
-            })
-        }
-    }
+            end = end || start
 
-    PutStructor(structor, pos) {
-        this.Tile(pos).Structor(structor)
+            if (!item) {
+                Vec2.ForEach(start, end, (pos) => {
+                    this.SetItem(false, pos)
+                })
+            } else {
+                Vec2.ForEach(start, end, (pos) => {
+                    this.SetItem(new item(), pos)
+                })
+            }
+        }
     }
 
     SetStructor(structor, start, end) {
-        if (structor instanceof Structor) {
-            structor = structor.id
-        }
-
-        end = end || start
-
-        if (!structor) {
-            Vec2.forEach(start, end, (pos) => {
-                this.PutStructor(false, pos)
-            })
+        if (structor instanceof Structor || structor === false) {
+            this.Tile(start).Structor(structor)
         } else {
-            Vec2.forEach(start, end, (pos) => {
-                this.PutStructor(Structors[structor].Clone(), pos)
-            })
-        }
-    }
+            end = end || start
 
-    PutTile(tile, pos) {
-        var old = this.Tile(pos)
-        for (var k in tile) {
-            old[k] = tile[k]
+            if (!structor) {
+                Vec2.ForEach(start, end, (pos) => {
+                    this.SetStructor(false, pos)
+                })
+            } else {
+                Vec2.ForEach(start, end, (pos) => {
+                    this.SetStructor(new structor(), pos)
+                })
+            }
         }
     }
 
     SetTile(tile, start, end) {
         if (tile instanceof Tile) {
-            tile = tile.id
+            tile.node = this.Node(start)
+            this.Node(start).tile = tile
+        } else {
+            end = end || start
+
+            Vec2.ForEach(start, end, (pos) => {
+                this.SetTile(new tile(), pos)
+            })
         }
-
-        end = end || start
-
-        Vec2.forEach(start, end, (pos) => {
-            this.PutTile(Tiles[tile].Clone(), pos)
-        })
     }
 
     // functions
@@ -160,20 +145,20 @@ export default class Map extends Interface(Base) {
     Draw(ctx) {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
-                this.tiles[x][y].Draw(ctx)
+                this[x][y].tile.Draw(ctx)
             }
         }
 
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                if (this.tiles[x][y].Structor()) {
-                    this.tiles[x][y].Structor().Draw(ctx)
+                if (this[x][y].structor) {
+                    this[x][y].structor.Draw(ctx)
                 }
-                if (this.tiles[x][y].Item()) {
-                    this.tiles[x][y].Item().Draw(ctx)
+                if (this[x][y].item) {
+                    this[x][y].item.Draw(ctx)
                 }
-                if (this.tiles[x][y].Player()) {
-                    this.tiles[x][y].Player().Draw(ctx)
+                if (this[x][y].player) {
+                    this[x][y].player.Draw(ctx)
                 }
             }
         }

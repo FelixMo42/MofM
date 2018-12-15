@@ -1,16 +1,8 @@
 import Base from "../component/Base"
 
-export const Items = {}
-
 export default class Item extends Base {
-    constructor(params) {
-        super(Items)
-        this.Setup(params)
-    }
-
     // varibles
 
-    name = "def"
     type = "def"
 
     size = 1
@@ -103,15 +95,6 @@ export default class Item extends Base {
         this.player.Bonus(this.eq_bonus, false)
         this.player.Unequip(this)
         this.player.Equip(this, "gear")
-    }
-
-    AddEffect(effect) {
-        // TODO: make add effect work
-    }
-
-    AddAction(action) {
-        action.item = this
-        // TODO: make add action work
     }
 
     // graphics

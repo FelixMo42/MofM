@@ -1,17 +1,9 @@
 import Base from "../component/Base"
 
-export const Structors = {}
-
 export default class Structor extends Base {
-    constructor(params) {
-        super(Structors)
-        this.Setup(params)
-    }
-
     // varibles
 
-    name = "def"
-
+    color = "red"
     walkable = true
 
     // accessors
