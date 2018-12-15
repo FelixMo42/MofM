@@ -1,20 +1,21 @@
 {
-    "name": "lister",
-    "version": "0.1.0",
-    "private": true,
-    "dependencies": {
-        "nw": "^0.30.2",
-        "react": "^16.3.2",
-        "react-dom": "^16.3.2",
-        "react-draggable": "^3.0.5",
-        "react-panels": "^2.5.1",
-        "react-router-dom": "^4.2.2",
-        "react-scripts": "1.1.4"
-    },
-    "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test --env=jsdom",
-        "eject": "react-scripts eject"
-    }
+  "name": "lister",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "create-react-app": "^2.1.1",
+    "nw": "^0.30.2",
+    "react": "^16.6.3",
+    "react-dom": "^16.3.2",
+    "react-draggable": "^3.0.5",
+    "react-panels": "^2.5.1",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
 }

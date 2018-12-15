@@ -1,6 +1,5 @@
 # node
 /node_modules
-/src/registerServiceWorker.js
 package-lock.json
 package.jspm
 
