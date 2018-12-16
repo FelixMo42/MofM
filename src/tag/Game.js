@@ -5,7 +5,11 @@ export default class Game extends React.Component {
     FPS = 10
 
     constructor(props) {
-        super()
+        super(props)
+
+        if (props.FPS) {
+            this.FPS = props.FPS
+        }
 
         this.world = props.world
         this.world.NextTurn()

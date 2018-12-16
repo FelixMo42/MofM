@@ -26,17 +26,22 @@ Gunmanship.Register()
 // create actions //
 
 class Move extends Action {
-    cost = {
-        moves: {move: -1}
-    }
+    name = "move"
 
-    style = "self"
-
-    effect = {
-        player: {
-            push: -1
+    cost = class extends Action.Cost {
+        moves = {
+            move: -1
         }
     }
+
+    effects = [
+        class extends Action.Effect {
+            style = Action.Styles("self")
+            player = {
+                push: -1
+            }
+        }
+    ]
 
     Cheak(target) {
         return super.Cheak(target) && this.Map().Tile(target).Walkable()
@@ -45,48 +50,75 @@ class Move extends Action {
 Move.Register()
 
 class Pickup extends Action {
-    cost = {moves: {sub: -1}}
+    name = "pickup"
 
-    effect = {
-        item: {
-            pickup: true
+    cost = class extends Action.Cost {
+        moves = {
+            sub: -1
         }
     }
+
+    effects = [
+        class extends Action.Effect {
+            item = {
+                pickup: true
+            }
+        }
+    ]
 }
 Pickup.Register()
 
 class Punch extends Action {
+    name = "punch"
     skill = HandToHand
-    cost = {moves: {main: -1}}
-    effect = {
-        style: "ball",
-        player: {
-            hp: [-10,-5]
+    cost = class extends Action.Cost {
+        moves = {
+            main: -1
         }
     }
+    effects = [
+        class extends Action.Effect {
+            player = {
+                hp: [-10,-5]
+            }
+        }
+    ]
 }
 Punch.Register()
 
 class Shoot extends Action {
+    name = "shoot"
     skill = Gunmanship
-    cost = {moves: {main: -1}}
-    range = 10
-    style = "ball"
-    effect = {
-        player: {
-            hp: [-10,-5]
+    cost = class extends Action.Cost {
+        moves = {
+            main: -1
         }
     }
+    effects = [
+        class extends Action.Effect {
+            range = 10
+            player: {
+                hp: [-10,-5]
+            }
+        }
+    ]
 }
 Shoot.Register()
 
 Gunmanship.Action(Shoot)
 
 class SuperShot extends Action {
+    name = "super shot"
     skill = Gunmanship
-    cost = {moves: {main: -1}, mp: -10}
-    effect = {}
+    cost = class extends Action.Cost {
+        moves = {
+            main: -1
+        }
+        mp = -10
+    }
+    effects = []
 }
+SuperShot.Register()
 
 Gunmanship.Action(SuperShot)
 

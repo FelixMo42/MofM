@@ -40,9 +40,9 @@ class Slot {
                     return (
                         <div key={this.items[pos].key}>
                             {this.items[pos].name}
-                            {
-                                this.items[pos].equped &&
-                                <button onClick={() => {this.items[pos].Unequip()}}>U</button> ||
+                            { this.items[pos].equped ?
+                                <button onClick={() => {this.items[pos].Unequip()}}>U</button>
+                            :
                                 <button onClick={() => {this.items[pos].Equip()}}>E</button>
                             }
                             <button onClick={() => {this.items[pos].Drop()}}>D</button>
@@ -66,7 +66,6 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     // varibles
 
-    name = "def"
     color = "blue"
 
     hp = 20
@@ -141,7 +140,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Bonus(section, key = true) {
         // TODO: hash tables
-        if (section instanceof Object && key) {
+        /*if (section instanceof Object && key) {
             section.active = true
             this.bonuses.list.push(section)
             if (!section.timer) {section.timer = 1}
@@ -193,7 +192,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             } else {
                 return 0
             }
-        }
+        }*/
     }
 
     Stat(stat) {
@@ -401,7 +400,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Render(state) {
         return (
-            <Draggable defaultPosition={{x: 0, y: 0}} handle=".box" cancel="span" bounds="#Game">
+            <Draggable handle=".box" cancel="span" bounds="#Game">
                 <div className="player box">
                     <span className="top cancel">
                         { this.name }
@@ -452,11 +451,15 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     RenderActions() {
         return (<span id="actions">
-            <span>main: {this.moves.main} | move: {this.moves.move} | sub: {this.moves.sub}</span>
+            <span>
+                main: {this.moves.main} |
+                move: {this.moves.move} |
+                sub: {this.moves.sub}
+            </span>
             <hr className="light"/>
             { Object.values(this.actions).map((action) => action.Render()) }
             { Object.values(this.skills).map((skill) => {
-                { Object.values(skill.actions).map((action) => console.log(action)) }
+                return Object.values(skill.actions).map((action) => "")
             }) }
         </span>)
     }

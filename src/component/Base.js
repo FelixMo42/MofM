@@ -39,7 +39,6 @@ export default class Base {
     }
 
     static Get(id) {
-        console.log(list)
         return list[this.name.charAt(0).toUpperCase()][id]
     }
 }

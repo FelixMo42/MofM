@@ -29,7 +29,7 @@ export default class Tile extends ManaPool(Base) {
     Player(player) {
         if (player) {
             this.node.player = player
-        } else if (this.player && player === false) {
+        } else if (this.node.player && player === false) {
             delete this.node.player
         }
         return this.node.player

@@ -7,8 +7,18 @@ import Interface from "../component/Interface"
 
 import Tile from "./Tile"
 import Player from "./Player"
-import Item from "./Item"
-import Structor from "./Structor"
+
+function cheak(obj, start, end) {
+    if (end) {
+        return false
+    } else if (!obj.prototype) {
+        return true
+    } else if (obj === false) {
+        return true
+    } else {
+        return false
+    }
+}
 
 export default class Map extends Interface(Base) {
     constructor(params) {
@@ -78,7 +88,7 @@ export default class Map extends Interface(Base) {
     }
 
     SetItem(item, start, end) {
-        if (item instanceof Item) {
+        if (cheak(item, start, end)) {
             this.Tile(start).Item(item)
         } else {
             end = end || start
@@ -96,7 +106,7 @@ export default class Map extends Interface(Base) {
     }
 
     SetStructor(structor, start, end) {
-        if (structor instanceof Structor || structor === false) {
+        if (cheak(structor, start, end)) {
             this.Tile(start).Structor(structor)
         } else {
             end = end || start
@@ -114,7 +124,7 @@ export default class Map extends Interface(Base) {
     }
 
     SetTile(tile, start, end) {
-        if (tile instanceof Tile) {
+        if (cheak(tile, start, end)) {
             tile.node = this.Node(start)
             this.Node(start).tile = tile
         } else {

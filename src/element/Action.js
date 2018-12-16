@@ -6,47 +6,10 @@ import Base from "../component/Base"
 
 // TODO: add line and cone to styles
 
-const styles = {
-    ball: {
-        cheak: (map, sourcePos, targetPos, effect) => {
-            return Math.floor(Vec2.dist(sourcePos, targetPos)) <= effect.range
-        },
-        do: (map, sourcePos, targetPos, effect) => {
-            map.Tile(targetPos).Affect(effect, sourcePos, targetPos)
-            // TODO: implement area
-        }
-    },
-    click: {
-        cheak: (map, sourcePos, targetPos, effect) => {
-            return true
-        },
-        do: (map, sourcePos, targetPos, effect) => {
-            map.Tile(targetPos).Affect(effect, sourcePos, targetPos)
-        }
-    },
-    self: {
-        cheak: (map, sourcePos, targetPos, effect) => {
-            return true
-        },
-        do: (map, sourcePos, targetPos, effect) => {
-            map.Tile(sourcePos).Affect(effect, targetPos, sourcePos)
-        }
-    }
-}
+const styles = {}
 
 export default class Action extends Base {
-    style = "click"
     effects = []
-    cost = {}
-
-    range = 1
-    area = 1
-
-    target = {
-        Position() {
-            return this.positon
-        }
-    }
 
     // accessors
 
@@ -62,85 +25,39 @@ export default class Action extends Base {
         return this.player.Position()
     }
 
+    static Styles(name) {
+        if (name) {
+            return styles[name]
+        }
+        return styles
+    }
+
     // functions
 
-    SetData(effect) {
-        effect.source = this
-        effect.target = this.target
-
-        if (!effect.skill && this.skill) {
-            effect.skill = this.player.Skill(this.skill)
-        }
-
-        if (!effect.style) {
-            effect.style = this.style
-        }
-        if (!effect.range) {
-            effect.range = this.range
-        }
-        if (!effect.area) {
-            effect.area = this.area
-        }
-        if (!effect.stat) {
-            effect.stat = this.stat
-        }
-    }
-
-    SetupEffect(effect) {
-        this.SetData(effect)
-        if (effect.player) {
-            this.SetData(effect.player)
-        }
-        if (effect.item) {
-            this.SetData(effect.item)
-        }
-        if (effect.structor) {
-            this.SetData(effect.structor)
-        }
-    }
-
-    Cheak(target) {
-        if (this.cost.hp) {
-            if (this.cost.hp > this.player.HP()) {
-                return false
+    Do(pos) {
+        var target = {
+            Position() {
+                return pos
             }
         }
-        if (this.cost.mp) {
-            if (this.cost.mp > this.player.MP()) {
-                return false
-            }
-        }
-        if (this.cost.moves) {
-            for (var k in this.cost.moves) {
-                if (this.cost.moves[k] < -this.player.Moves(k)) {
-                    return false
-                }
-            }
-        }
-        if (Math.floor(Vec2.dist(this.Position(), target)) > this.range) {
-            return false
-        }
-        for (var i in this.effects) {
-            if (!styles[this.effects[i].style].cheak(this.Map(), this.Position(), target, this.effects[i])) {
-                return false
-            }
-        }
-        return true
-    }
 
-    Do(target) {
-        if (!this.Cheak(target)) {
-            return false
-        }
-
-        console.debug(this.player.name + " uses " + this.name + " on " + target.x + ", " + target.y)
-
-        this.target.positon = target
-
-        this.player.Affect(this.cost)
+        var effects = [new this.cost(this, target).Setup(this, target)]
 
         for (var i in this.effects) {
-            styles[this.effects[i].style].do(this.Map(), this.Position(), target, this.effects[i])
+            effects.push(new this.effects[i]().Setup(this, target))
+        }
+
+        for (i in effects) {
+            if (!effects[i].Cheak()) {
+                console.debug(this.player.name + " failed to uses " + this.name + " on " + pos.x + ", " + pos.y)
+                return false
+            }
+        }
+
+        console.debug(this.player.name + " uses " + this.name + " on " + pos.x + ", " + pos.y)
+
+        for (i in effects) {
+            effects[i].Do()
         }
 
         return true
@@ -151,7 +68,11 @@ export default class Action extends Base {
     Render() {
         return (
             <span key={this.key}>
-                {this.player.turn && this.player.controller === "player" ? this.RenderCheakBox() : "- "}
+                { this.player.turn && this.player.controller === "player" ?
+                    this.RenderCheakBox()
+                :
+                    "- "
+                }
                 {this.name}
                 <br />
             </span>
@@ -166,4 +87,128 @@ export default class Action extends Base {
     }
 }
 
+Action.Style = class {
+    static Register(name) {
+        styles[name] = this
+    }
+}
+
+export class ballStyle extends Action.Style {
+    static Cheak(map, sourcePos, targetPos, effect) {
+        return Math.floor(Vec2.Dist(sourcePos, targetPos)) <= effect.range
+    }
+
+    static Do(map, sourcePos, targetPos, effect) {
+        map.Tile(targetPos).Affect(effect, sourcePos, targetPos)
+        // TODO: implement area
+    }
+}
+ballStyle.Register("ball")
+
+export class clickStyle extends Action.Style {
+    static Cheak(map, sourcePos, targetPos, effect) {
+        return true
+    }
+
+    static Do(map, sourcePos, targetPos, effect) {
+        map.Tile(targetPos).Affect(effect, sourcePos, targetPos)
+    }
+}
+clickStyle.Register("click")
+
+export class selfStyle extends Action.Style {
+    static Cheak(map, sourcePos, targetPos, effect) {
+        return true
+    }
+
+    static Do(map, sourcePos, targetPos, effect) {
+        map.Tile(sourcePos).Affect(effect, targetPos, sourcePos)
+    }
+}
+selfStyle.Register("self")
+
+export class costStyle extends Action.Style {
+    static Cheak(map, source, target, effect) {
+        var player = map.Tile(source).Player()
+        if (effect.hp) {
+            if (effect.hp > player.HP()) {
+                return false
+            }
+        }
+        if (effect.mp) {
+            if (effect.mp > player.MP()) {
+                return false
+            }
+        }
+        if (effect.moves) {
+            for (var k in effect.moves) {
+                if (effect.moves[k] < -player.Moves(k)) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    static Do(map, source, target, effect) {
+        map.Tile(source).Player().Affect(effect)
+    }
+}
+costStyle.Register("cost")
+
+Action.Effect = class {
+    style = ballStyle
+
+    Setup(source, target) {
+        this.source = source
+        this.target = target
+        if (this.skill) {
+            this.skill = this.source.Player().Skill(this.skill)
+        }
+        // share data with subunits
+        if (this.player) {
+            this.SetData(this.player)
+        }
+        if (this.item) {
+            this.SetData(this.item)
+        }
+        if (this.structor) {
+            this.SetData(this.structor)
+        }
+
+        return this
+    }
+
+    SetData(effect) {
+        effect.source = this.source
+        effect.target = this.target
+        effect.skill = this.skill
+        effect.style = this.style
+        effect.range = this.range
+        effect.area = this.area
+        effect.stat = this.stat
+    }
+
+    Cheak() {
+        return this.style.Cheak(
+            this.source.Map(),
+            this.source.Position(),
+            this.target.Position(),
+            this
+        )
+    }
+
+    Do() {
+        return this.style.Do(
+            this.source.Map(),
+            this.source.Position(),
+            this.target.Position(),
+            this
+        )
+    }
+}
+
+Action.Cost = class extends Action.Effect {
+    style = costStyle
+}
 // TODO: balance system
