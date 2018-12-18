@@ -59,7 +59,9 @@ export default class Map extends Interface(Base) {
     }
 
     Tile(pos) {
-        return this.Node(pos).tile
+        if (pos.x >= 0 && pos.y >= 0 && pos.x < this.width && pos.y < this.height) {
+            return this[pos.x][pos.y].tile
+        }
     }
 
     // creater functions

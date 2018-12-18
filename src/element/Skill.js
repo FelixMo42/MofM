@@ -51,12 +51,13 @@ export default class Skill extends Base {
     }
 
     Action(action) {
-        if (action) {
-            if (action instanceof Action) {
-                action = action.id
-            }
-            return this.actions[action]
+        if (action instanceof Action) {
+            action = action.id
         }
+        return this.actions[action]
+    }
+
+    Actions() {
         return this.actions
     }
 

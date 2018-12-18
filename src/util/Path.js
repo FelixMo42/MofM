@@ -56,7 +56,7 @@ function find(map, start, end, mode) {
 function addNeighbours(map, opened, closed, node, end, mode) {
     var f = node.s + 10
 
-    Vec2.forEach(
+    Vec2.ForEach(
         new Vec2(node.pos.x - 1, node.pos.y - 1),
         new Vec2(node.pos.x + 1, node.pos.y + 1),
         (pos) => {

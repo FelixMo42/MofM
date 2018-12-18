@@ -76,6 +76,7 @@ class Punch extends Action {
     }
     effects = [
         class extends Action.Effect {
+            range = 1
             player = {
                 hp: [-10,-5]
             }
@@ -185,8 +186,9 @@ world.SetStructor(false, new Vec2(2,4), new Vec2(7,5))
 
 world.SetItem(Gun, new Vec2(1,8))
 
-world.SetPlayer(new EdenWhite(), new Vec2(9,0))
-world.SetPlayer(new EdenBlack(), new Vec2(0,9))
+var eb = new EdenBlack()
+world.SetPlayer(new EdenWhite({target: eb}), new Vec2(9,0))
+world.SetPlayer(eb, new Vec2(0,9))
 
 // render world //
 

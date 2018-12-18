@@ -11,6 +11,8 @@ let ManaPool = (superclass) => class extends superclass {
                 mp = Rules.Dodge(aim, this.Dodge(), mp)
             }
 
+            console.debug(this.name + "'s mp changed by "+ mp + " points")
+
             this.mp += mp
 
             // TODO: max mp + 0 mp

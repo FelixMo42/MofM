@@ -77,6 +77,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     _max_moves = {}
 
     color = "blue"
+    controller = "robot"
 
     hp = 20
     mp = 20
@@ -226,9 +227,11 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     Skill(skill) {
-        if (!(skill in this.skills)) {
-            this.skills[skill] = new skill({player: this})
+        if (!(skill.id in this.skills)) {
+            this.skills[skill.id] = new skill({player: this})
         }
+
+        console.log(this.skills)
 
         return this.skills[skill.id]
     }
@@ -283,11 +286,11 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     DR() {
-        return this.Skill( Skill.Get("defence") ).Roll("con", 0)
+        return this.Skill( Skill.Get("Defence") ).Roll("con")
     }
 
     Dodge() {
-        return this.Skill( Skill.Get("dodge") ).Roll("dex")
+        return this.Skill( Skill.Get("Dodge") ).Roll("dex")
     }
 
     // functions
@@ -295,7 +298,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     Turn() {
         this.stack = []
         this.turn = true
-        console.debug(this.name + " starts their turn")
+        console.debug(this.name + " starts their turn in " + this.controller + " mode")
 
         // TODO: regen HP
         // TODO: regen MP, using dynamic system
@@ -303,7 +306,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         // TODO: do ai stuff
 
         // regen moves
-        for (var k in this.moves) {
+        for (var k in this._moves) {
             this.Moves(k, this.MaxMoves(k))
         }
 
@@ -311,7 +314,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         if (this.controller === "robot") {
             if (this.target.HP() > 0) {
                 var path = Path.find(this.Map(), this.Position(), this.target.Position())
-                while (path.length > 0 && this.moves.move > 0) {
+                while (path.length > 0 && this._moves.move > 0) {
                     this.Action( Action.Get("Move") ).Do(path[0])
                     path.shift()
                 }
@@ -468,9 +471,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             </span>
             <hr className="light"/>
             { Object.values(this._actions).map((action) => action.Render()) }
-            { Object.values(this.skills).map((skill) => {
-                return Object.values(skill._actions).map((action) => "")
-            }) }
+            {/* Object.values(this.skills).map((skill) => {
+                return Object.values(skill.Actions()).map((action) => "")
+            }) */}
         </span>)
     }
 }

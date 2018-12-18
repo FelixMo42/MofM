@@ -1,6 +1,6 @@
 import Rules from "../util/Rules"
 
-let ManaPool = (superclass) => class extends superclass {
+let HealthPool = (superclass) => class extends superclass {
     HP(hp, aim) {
         if (hp) {
             if (typeof hp === 'object') {
@@ -11,15 +11,17 @@ let ManaPool = (superclass) => class extends superclass {
                 hp = Rules.Dodge(aim, this.Dodge(), hp)
             }
 
-            if (this.DR) {
+            if (this.hp < 0 && this.DR) {
                 var dr = this.DR()
                 if (dr >= -hp) {
                     console.debug("block")
+                    hp = 0
                 } else {
                     hp += dr
                 }
             }
 
+            console.debug(this.name + "'s hp changed by "+ hp + " points")
             this.hp += hp
 
             if (this.hp <= 0) {
@@ -34,4 +36,4 @@ let ManaPool = (superclass) => class extends superclass {
     }
 }
 
-export default ManaPool
+export default HealthPool
