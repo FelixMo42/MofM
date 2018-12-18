@@ -12,6 +12,8 @@ export default class Base {
         }
     }
 
+    Constructor() {}
+
     static Register(name) {
         var type = this.__proto__.name.charAt(0).toUpperCase()
 
@@ -35,6 +37,13 @@ export default class Base {
             // TODO: cheak name formating
             // TODO: remove when name system removed
             list[type][this.name] = this
+        }
+
+        return class extends this {
+            constructor(params) {
+                super(params)
+                this.Constructor(params)
+            }
         }
     }
 

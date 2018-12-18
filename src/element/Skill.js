@@ -7,8 +7,8 @@ import Action from "./Action"
 export const Skills = {}
 
 export default class Skill extends Base {
-    constructor(params) {
-        super(params)
+    Constructor(params) {
+        super.Constructor(params)
         this.actions = this.actions || []
     }
 

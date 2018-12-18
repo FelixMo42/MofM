@@ -91,11 +91,25 @@ Action.Style = class {
     static Register(name) {
         styles[name] = this
     }
+
+    static Cheak(map, source, target, effect) {
+        if (effect.range) {
+            if (Math.floor(Vec2.Dist(source, target)) > effect.range) {
+                return false
+            }
+        }
+        if (effect.walkable !== undefined) {
+            if (map.Tile(target).Walkable() !== effect.walkable) {
+                return false
+            }
+        }
+        return true
+    }
 }
 
 export class ballStyle extends Action.Style {
-    static Cheak(map, sourcePos, targetPos, effect) {
-        return Math.floor(Vec2.Dist(sourcePos, targetPos)) <= effect.range
+    static Cheak(map, source, target, effect) {
+        return super.Cheak(map, source, target, effect)
     }
 
     static Do(map, sourcePos, targetPos, effect) {
@@ -106,8 +120,8 @@ export class ballStyle extends Action.Style {
 ballStyle.Register("ball")
 
 export class clickStyle extends Action.Style {
-    static Cheak(map, sourcePos, targetPos, effect) {
-        return true
+    static Cheak(map, source, target, effect) {
+        return super.Cheak(map, source, target, effect)
     }
 
     static Do(map, sourcePos, targetPos, effect) {
@@ -117,8 +131,8 @@ export class clickStyle extends Action.Style {
 clickStyle.Register("click")
 
 export class selfStyle extends Action.Style {
-    static Cheak(map, sourcePos, targetPos, effect) {
-        return true
+    static Cheak(map, source, target, effect) {
+        return super.Cheak(map, source, target, effect)
     }
 
     static Do(map, sourcePos, targetPos, effect) {
@@ -130,6 +144,9 @@ selfStyle.Register("self")
 export class costStyle extends Action.Style {
     static Cheak(map, source, target, effect) {
         var player = map.Tile(source).Player()
+        if (!super.Cheak(map, source, target, effect)) {
+            return false
+        }
         if (effect.hp) {
             if (effect.hp > player.HP()) {
                 return false

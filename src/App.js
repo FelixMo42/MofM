@@ -37,15 +37,13 @@ class Move extends Action {
     effects = [
         class extends Action.Effect {
             style = Action.Styles("self")
+            range = 1
+            walkable = true
             player = {
                 push: -1
             }
         }
     ]
-
-    Cheak(target) {
-        return super.Cheak(target) && this.Map().Tile(target).Walkable()
-    }
 }
 Move.Register()
 
@@ -131,33 +129,34 @@ class Gun extends Item {
 
 // create players //
 
-var eb = new Player({
-    name: "Eden Black",
-    controller: "player",
-    color: "black"
-})
-eb.Learn(Move)
-eb.Learn(Punch)
-eb.Learn(Shoot)
-eb.Learn(Pickup)
+class EdenBlack extends Player {
+    name = "Eden Black"
+    controller = "player"
+    color = "black"
+    actions = [
+        Move,
+        Punch,
+        Shoot,
+        Pickup
+    ]
+}
 
-var ew = new Player({
-    name: "Eden White",
-    color: "white"
-})
-ew.Learn(Move)
-ew.Learn(Punch)
-eb.Learn(Pickup)
-
-eb.target = ew
-ew.target = eb
+class EdenWhite extends Player {
+    name = "Eden White"
+    color = "white"
+    actions = [
+        Move,
+        Punch,
+        Pickup
+    ]
+}
 
 // create tile //
 
 class Grass extends Tile {
     color = "green"
 }
-Grass.Register()
+Grass = Grass.Register()
 
 class Floor extends Tile {
     color = "gray"
@@ -186,8 +185,8 @@ world.SetStructor(false, new Vec2(2,4), new Vec2(7,5))
 
 world.SetItem(Gun, new Vec2(1,8))
 
-//world.SetPlayer(ew,new Vec2(9,0))
-world.SetPlayer(eb,new Vec2(0,9))
+world.SetPlayer(new EdenWhite(), new Vec2(9,0))
+world.SetPlayer(new EdenBlack(), new Vec2(0,9))
 
 // render world //
 

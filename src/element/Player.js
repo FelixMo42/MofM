@@ -55,16 +55,26 @@ class Slot {
 }
 
 export default class Player extends Interface(HealthPool(ManaPool(Base))) {
-    constructor(params) {
-        super(params)
+    set actions(actions) {
+        for (var i in actions) {
+            this._actions[actions[i].id] = new actions[i]({
+                player: this
+            })
+        }
+    }
 
-        this.max_moves = {}
-        for (var k in this.moves) {
-            this.max_moves[k] = this.moves[k]
+    set moves(moves) {
+        for (var key in moves) {
+            this._moves[key] = moves[key]
+            this._max_moves[key] = moves[key]
         }
     }
 
     // varibles
+
+    _actions = {}
+    _moves = {}
+    _max_moves = {}
 
     color = "blue"
 
@@ -86,12 +96,12 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         gear: new Slot(1000)
     }
 
-    actions = {}
     skills = {}
     stats = {
         int: 0, wil: 0, chr: 0,
         str: 0, con: 0, dex: 0
     }
+
     moves = {
         move: 5,
         main: 1,
@@ -204,12 +214,12 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     Actions() {
-        return this.actions
+        return this._actions
     }
 
     Action(action) {
-        if (action.id in this.actions) {
-            return this.actions[action.id]
+        if (action.id in this._actions) {
+            return this._actions[action.id]
         } else {
             return false
         }
@@ -250,25 +260,25 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     Moves(name, amu) {
         if (name) {
             if (amu) {
-                this.moves[name] = Math.min(
-                    Math.max(this.moves[name] + amu, 0),
-                    this.max_moves[name]
+                this._moves[name] = Math.min(
+                    Math.max(this._moves[name] + amu, 0),
+                    this._max_moves[name]
                 )
             }
-            return this.moves[name]
+            return this._moves[name]
         } else {
-            return this.moves
+            return this._moves
         }
     }
 
     MaxMoves(name, amu) {
         if (name) {
             if (amu) {
-                this.max_moves[name] = Math.max(this.max_moves[name] + amu, 0)
+                this._max_moves[name] = Math.max(this._max_moves[name] + amu, 0)
             }
-            return this.max_moves[name]
+            return this._max_moves[name]
         } else {
-            return this.max_moves
+            return this._max_moves
         }
     }
 
@@ -452,14 +462,14 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     RenderActions() {
         return (<span id="actions">
             <span>
-                main: {this.moves.main} |
-                move: {this.moves.move} |
-                sub: {this.moves.sub}
+                main: {this._moves.main} / {this._max_moves.main} |
+                move: {this._moves.move} / {this._max_moves.move} |
+                sub: {this._moves.sub} / {this._max_moves.sub}
             </span>
             <hr className="light"/>
-            { Object.values(this.actions).map((action) => action.Render()) }
+            { Object.values(this._actions).map((action) => action.Render()) }
             { Object.values(this.skills).map((skill) => {
-                return Object.values(skill.actions).map((action) => "")
+                return Object.values(skill._actions).map((action) => "")
             }) }
         </span>)
     }
