@@ -17,7 +17,6 @@ export default class Item extends Base {
     action = []
 
     eq_bonus = {timer: -1}
-
     uq_bonus = {timer: -1}
 
     // accessors
@@ -61,6 +60,8 @@ export default class Item extends Base {
 
         this.player.Bonus(this.uq_bonus, true)
         this.player.Equip(this, "gear")
+
+        this.equped = false
 
         return this
     }

@@ -174,6 +174,8 @@ export default class Map extends Interface(Base) {
                 }
             }
         }
+
+        Controller.DrawUI(ctx)
     }
 
     Render() {

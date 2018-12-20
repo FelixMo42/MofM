@@ -9,7 +9,19 @@ import Base from "../component/Base"
 const styles = {}
 
 export default class Action extends Base {
-    effects = []
+    set effects(effects) {
+        for (var i in effects) {
+            this._effects.push(new effects[i]().Setup(this, this.target))
+        }
+    }
+
+    get effects() {
+        return this._effects
+    }
+
+    _effects = []
+    cheaks = {}
+    target = {}
 
     // accessors
 
@@ -34,24 +46,40 @@ export default class Action extends Base {
 
     // functions
 
-    Do(pos) {
-        var target = {
-            Position() {
-                return pos
-            }
-        }
-
-        var effects = [new this.cost(this, target).Setup(this, target)]
-
-        for (var i in this.effects) {
-            effects.push(new this.effects[i]().Setup(this, target))
-        }
-
-        for (i in effects) {
-            if (!effects[i].Cheak()) {
-                console.debug(this.player.name + " failed to uses " + this.name + " on " + pos.x + ", " + pos.y)
+    Cheak(pos, effects) {
+        if (this.cheaks.range) {
+            if (Math.floor(Vec2.Dist(this.Position(), pos)) > this.cheaks.range) {
                 return false
             }
+        }
+        if (this.cheaks.walkable !== undefined) {
+            if (this.Map().Tile(pos).Walkable() !== this.cheaks.walkable) {
+                return false
+            }
+        }
+        for (var i in effects) {
+            if (!effects[i].Cheak()) {
+                return false
+            }
+        }
+        return true
+    }
+
+    Do(pos) {
+        this.target.Position = () => {
+            return pos
+        }
+
+        var effects = [new this.cost().Setup(this, this.target)]
+
+        for (var i in this.effects) {
+            //effects.push(new this.effects[i]().Setup(this, target))
+            effects.push(this.effects[i])
+        }
+
+        if (!this.Cheak(pos, effects)) {
+            console.debug(this.player.name + " failed to uses " + this.name + " on " + pos.x + ", " + pos.y)
+            return false
         }
 
         console.debug(this.player.name + " uses " + this.name + " on " + pos.x + ", " + pos.y)
@@ -65,10 +93,31 @@ export default class Action extends Base {
 
     // graphics
 
+    DrawUI(ctx) {
+        this.target.Position = () => {
+            return ctx.mousePos
+        }
+
+        if (this.cheaks.range) {
+            ctx.beginPath()
+            ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
+            var pos = this.Position()
+            var size = ctx.size * this.cheaks.range * 2
+            ctx.arc((pos.x + .5) * ctx.size, (pos.y + .5) * ctx.size, size / 2, 0, 2 * Math.PI)
+            ctx.fill()
+        }
+
+        for (var i in this.effects) {
+            this.effects[i].DrawUI(this, ctx, this.Cheak(
+                ctx.mousePos, this.effects
+            ))
+        }
+    }
+
     Render() {
         return (
             <span key={this.key}>
-                { this.player.turn && this.player.controller === "player" ?
+                {this.player.turn && this.player.controller === "player" ?
                     this.RenderCheakBox()
                 :
                     "- "
@@ -93,17 +142,20 @@ Action.Style = class {
     }
 
     static Cheak(map, source, target, effect) {
-        if (effect.range) {
-            if (Math.floor(Vec2.Dist(source, target)) > effect.range) {
-                return false
-            }
-        }
-        if (effect.walkable !== undefined) {
-            if (map.Tile(target).Walkable() !== effect.walkable) {
-                return false
-            }
-        }
         return true
+    }
+
+    static DrawUI(source, ctx, cheak, effect) {
+        ctx.beginPath()
+        if (cheak) {
+            ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
+        } else {
+            ctx.fillStyle = "rgba(255, 0, 0, 0.5)"
+        }
+        var pos = ctx.mousePos
+        var size = ctx.size * (effect.area * 2 + 1)
+        ctx.arc((pos.x + .5) * ctx.size, (pos.y + .5) * ctx.size, size / 2, 0, 2 * Math.PI)
+        ctx.fill()
     }
 }
 
@@ -175,6 +227,7 @@ costStyle.Register("cost")
 
 Action.Effect = class {
     style = ballStyle
+    area = 0
 
     Setup(source, target) {
         this.source = source
@@ -222,6 +275,10 @@ Action.Effect = class {
             this.target.Position(),
             this
         )
+    }
+
+    DrawUI(source, ctx, cheak) {
+        return this.style.DrawUI(source, ctx, cheak, this)
     }
 }
 

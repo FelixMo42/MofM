@@ -40,7 +40,7 @@ class Slot {
                     return (
                         <div key={this.items[pos].key}>
                             {this.items[pos].name}
-                            { this.items[pos].equped ?
+                            {this.items[pos].equped ?
                                 <button onClick={() => {this.items[pos].Unequip()}}>U</button>
                             :
                                 <button onClick={() => {this.items[pos].Equip()}}>E</button>
@@ -396,10 +396,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Draw(ctx) {
         ctx.beginPath()
-
         ctx.fillStyle = this.color
         ctx.strokeStyle = "black"
-        var pos = this.tile.Position()
+        var pos = this.Position()
         ctx.arc((pos.x + .5) * ctx.size, (pos.y + .5) * ctx.size, ctx.size / 2 - 3, 0, 2 * Math.PI)
         ctx.fill()
         ctx.stroke()

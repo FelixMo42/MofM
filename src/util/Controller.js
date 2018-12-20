@@ -70,6 +70,13 @@ export default class Controller {
             this.map.player.EndTurn()
         }
     }
+
+    static DrawUI(ctx) {
+        if (!this.map || this.map.player.controller !== "player") {
+            return
+        }
+        this.action.DrawUI(ctx)
+    }
 }
 
 Controller.Mode("combat")

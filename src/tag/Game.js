@@ -28,10 +28,11 @@ export default class Game extends React.Component {
     }
 
     onMouseMoved(e) {
-        this.world.OnMouseMoved(new Vec2(
+        this.graphics.mousePos = new Vec2(
             Math.floor(e.clientX/this.graphics.size),
             Math.floor(e.clientY/this.graphics.size)
-        ))
+        )
+        this.world.OnMouseMoved(this.graphics.mousePos)
     }
 
     onKeyPress(e) {
@@ -51,6 +52,7 @@ export default class Game extends React.Component {
     componentDidMount() {
         this.canvas = this.refs.canvas
         this.graphics = this.canvas.getContext("2d")
+        this.graphics.mousePos = new Vec2(0,0)
 
         this.resize()
         window.addEventListener("resize", this.resize.bind(this))

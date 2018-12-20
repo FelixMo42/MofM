@@ -28,6 +28,11 @@ Gunmanship.Register()
 class Move extends Action {
     name = "move"
 
+    cheaks = {
+        range : 1,
+        walkable: true
+    }
+
     cost = class extends Action.Cost {
         moves = {
             move: -1
@@ -37,8 +42,6 @@ class Move extends Action {
     effects = [
         class extends Action.Effect {
             style = Action.Styles("self")
-            range = 1
-            walkable = true
             player = {
                 push: -1
             }
@@ -49,6 +52,10 @@ Move.Register()
 
 class Pickup extends Action {
     name = "pickup"
+
+    cheaks = {
+        range: 1
+    }
 
     cost = class extends Action.Cost {
         moves = {
@@ -69,6 +76,9 @@ Pickup.Register()
 class Punch extends Action {
     name = "punch"
     skill = HandToHand
+    cheaks = {
+        range: 1
+    }
     cost = class extends Action.Cost {
         moves = {
             main: -1
@@ -76,7 +86,6 @@ class Punch extends Action {
     }
     effects = [
         class extends Action.Effect {
-            range = 1
             player = {
                 hp: [-10,-5]
             }
@@ -88,6 +97,9 @@ Punch.Register()
 class Shoot extends Action {
     name = "shoot"
     skill = Gunmanship
+    cheaks = {
+        range: 10
+    }
     cost = class extends Action.Cost {
         moves = {
             main: -1
@@ -95,7 +107,6 @@ class Shoot extends Action {
     }
     effects = [
         class extends Action.Effect {
-            range = 10
             player: {
                 hp: [-10,-5]
             }
@@ -126,6 +137,7 @@ Gunmanship.Action(SuperShot)
 class Gun extends Item {
     color = "brown"
     slot = "hands"
+    name = "gun"
 }
 
 // create players //

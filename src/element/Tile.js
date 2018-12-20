@@ -103,10 +103,10 @@ export default class Tile extends ManaPool(Base) {
             this.node.pos.x * ctx.size, this.node.pos.y * ctx.size,
             ctx.size, ctx.size
         )
-        ctx.strokeStyle = "black"
+        /*ctx.strokeStyle = "black"
         ctx.strokeRect(
             this.node.pos.x * ctx.size, this.node.pos.y * ctx.size,
             ctx.size, ctx.size
-        )
+        )*/
     }
 }
