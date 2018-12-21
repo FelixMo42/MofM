@@ -28,11 +28,14 @@ export default class Game extends React.Component {
     }
 
     onMouseMoved(e) {
-        this.graphics.mousePos = new Vec2(
+        var vec = new Vec2(
             Math.floor(e.clientX/this.graphics.size),
             Math.floor(e.clientY/this.graphics.size)
         )
-        this.world.OnMouseMoved(this.graphics.mousePos)
+        if (this.world.Tile(vec)) {
+            this.graphics.mousePos = vec
+            this.world.OnMouseMoved(this.graphics.mousePos)
+        }
     }
 
     onKeyPress(e) {

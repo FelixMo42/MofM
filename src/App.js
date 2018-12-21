@@ -97,6 +97,7 @@ Punch.Register()
 class Shoot extends Action {
     name = "shoot"
     skill = Gunmanship
+    itemType = "gun"
     cheaks = {
         range: 10
     }
@@ -107,7 +108,7 @@ class Shoot extends Action {
     }
     effects = [
         class extends Action.Effect {
-            player: {
+            player = {
                 hp: [-10,-5]
             }
         }
@@ -138,6 +139,7 @@ class Gun extends Item {
     color = "brown"
     slot = "hands"
     name = "gun"
+    type = "gun"
 }
 
 // create players //

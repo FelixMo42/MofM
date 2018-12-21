@@ -57,9 +57,17 @@ class Slot {
 export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     set actions(actions) {
         for (var i in actions) {
-            this._actions[actions[i].id] = new actions[i]({
+            var action = new actions[i]({
                 player: this
             })
+            if (action.itemType) {
+                if (!(action.itemType in this._item_actions_ids)) {
+                    this._item_actions_ids[action.itemType] = {}
+                }
+                this._item_actions_ids[action.itemType][action.id] = actions[i]
+            } else {
+                this._actions[actions[i].id] = action
+            }
         }
     }
 
@@ -73,6 +81,8 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     // varibles
 
     _actions = {}
+    _item_actions = {}
+    _item_actions_ids = {}
     _moves = {}
     _max_moves = {}
 
@@ -380,12 +390,23 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Unequip(item) {
         this.items[item].remove(item)
+        delete this._item_actions[item.key]
         delete this.items[item]
         this.UpdateHTML()
     }
 
     Equip(item, slot) {
         var suc = this.gear[slot].add(item)
+        if (this._item_actions_ids[item.type] && slot !== "gear") {
+            this._item_actions[item.key] = {}
+            for (var id in this._item_actions_ids[item.type]) {
+                var action = new this._item_actions_ids[item.type][id]({
+                    player: this,
+                    item: item
+                })
+                this._item_actions[item.key][action.id] = action
+            }
+        }
         this.UpdateHTML()
         return suc
     }
@@ -469,7 +490,14 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
                 sub: {this._moves.sub} / {this._max_moves.sub}
             </span>
             <hr className="light"/>
-            { Object.values(this._actions).map((action) => action.Render()) }
+            {Object.values(this._actions).map((action) =>
+                action.itemType ? "" : action.Render()
+            )}
+            {Object.keys(this._item_actions).map((key) => {
+                return Object.values(this._item_actions[key]).map((action) => {
+                    return action.Render()
+                })
+            })}
             {/* Object.values(this.skills).map((skill) => {
                 return Object.values(skill.Actions()).map((action) => "")
             }) */}

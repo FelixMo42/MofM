@@ -51,6 +51,7 @@ export default class Action extends Base {
             if (Math.floor(Vec2.Dist(this.Position(), pos)) > this.cheaks.range) {
                 return false
             }
+            // TODO: fix range bugs
         }
         if (this.cheaks.walkable !== undefined) {
             if (this.Map().Tile(pos).Walkable() !== this.cheaks.walkable) {
@@ -118,21 +119,21 @@ export default class Action extends Base {
         return (
             <span key={this.key}>
                 {this.player.turn && this.player.controller === "player" ?
-                    this.RenderCheakBox()
+                    <input type="checkbox"
+                        checked={Controller.Action() === this}
+                        onChange={() => {Controller.Action(this)}}
+                    />
                 :
                     "- "
                 }
-                {this.name}
+                {this.itemType ?
+                    this.name + " (" + this.item.name + ")"
+                :
+                    this.name
+                }
                 <br />
             </span>
         )
-    }
-
-    RenderCheakBox() {
-        return <input type="checkbox"
-            checked={Controller.Action() === this}
-            onChange={() => {Controller.Action(this)}}
-        />
     }
 }
 
