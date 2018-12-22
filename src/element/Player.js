@@ -78,6 +78,12 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
     }
 
+    set links(links) {
+        for (var i in links) {
+            this._links[links[i].faction.id] = links[i]
+        }
+    }
+
     // varibles
 
     _actions = {}
@@ -85,6 +91,7 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     _item_actions_ids = {}
     _moves = {}
     _max_moves = {}
+    _links = {}
 
     color = "blue"
     controller = "robot"
@@ -128,6 +135,14 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     // accessors
+
+    Link(faction) {
+        if (this._links[faction.id]) {
+            return this._links[faction.id].value
+        } else {
+            return 0
+        }
+    }
 
     GP(gp) {
         if (gp) {
@@ -240,9 +255,6 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         if (!(skill.id in this.skills)) {
             this.skills[skill.id] = new skill({player: this})
         }
-
-        console.log(this.skills)
-
         return this.skills[skill.id]
     }
 
@@ -322,13 +334,16 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
         // AI
         if (this.controller === "robot") {
-            if (this.target.HP() > 0) {
-                var path = Path.find(this.Map(), this.Position(), this.target.Position())
-                while (path.length > 0 && this._moves.move > 0) {
-                    this.Action( Action.Get("Move") ).Do(path[0])
-                    path.shift()
+            var target = this.Enemey()
+            if (target) {
+                if (target.HP() > 0) {
+                    var path = Path.find(this.Map(), this.Position(), target.Position())
+                    while (path.length > 0 && this._moves.move > 0) {
+                        this.Action( Action.Get("Move") ).Do(path[0])
+                        path.shift()
+                    }
+                    this.Action( Action.Get("Punch") ).Do(target.Position())
                 }
-                this.Action( Action.Get("Punch") ).Do(this.target.Position())
             }
             this.stack.push(() => {
                 this.EndTurn()
@@ -386,6 +401,31 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             }
         }
         // TODO: more affect stuff
+    }
+
+    Relationship(player) {
+        if (this._links[player.id]) {
+            return this._links[player.id].value
+        }
+        var value = 0
+        for (var id in this._links) {
+            value += this._links[id].Relationship(player)
+        }
+        return value
+    }
+
+    Enemey() {
+        var value = 0
+        var players = this.Map().Players()
+        var enemey
+        for (var i in players) {
+            var v = this.Relationship(players[i])
+            if (value > v) {
+                value = v
+                enemey = players[i]
+            }
+        }
+        return enemey
     }
 
     Unequip(item) {

@@ -64,6 +64,10 @@ export default class Map extends Interface(Base) {
         }
     }
 
+    Players() {
+        return this.players
+    }
+
     // creater functions
 
     SetPlayer(player, start, end) {

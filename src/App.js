@@ -11,6 +11,7 @@ import Action from "./element/Action"
 import Player from "./element/Player"
 import Tile from "./element/Tile"
 import Map from "./element/Map"
+import Faction from "./element/Faction"
 
 // create skills //
 
@@ -116,8 +117,6 @@ class Shoot extends Action {
 }
 Shoot.Register()
 
-Gunmanship.Action(Shoot)
-
 class SuperShot extends Action {
     name = "super shot"
     skill = Gunmanship
@@ -131,47 +130,72 @@ class SuperShot extends Action {
 }
 SuperShot.Register()
 
-Gunmanship.Action(SuperShot)
-
 // create items //
 
-class Gun extends Item {
+class EdensRevolver extends Item {
     color = "brown"
     slot = "hands"
-    name = "gun"
+    name = "Eden Black's Revolver"
     type = "gun"
 }
+EdensRevolver.Register()
 
-// create players //
+class PlasmaRifle extends Item {
+    color = "silver"
+    slot = "hands"
+    name = "Plasma Rifle"
+    type = "gun"
+}
+PlasmaRifle.Register()
+
+
+// create factions //
+
+class Rebels extends Faction {
+    name = "rebel"
+}
+Rebels.Register()
+
+// create characters //
 
 class EdenBlack extends Player {
     name = "Eden Black"
     controller = "player"
     color = "black"
+    items = [
+        EdensRevolver
+    ]
     actions = [
         Move,
+        Pickup,
         Punch,
-        Shoot,
-        Pickup
+        Shoot
+    ]
+    links = [
+        Rebels.Link(-1)
     ]
 }
+EdenBlack.Register()
 
-class EdenWhite extends Player {
-    name = "Eden White"
-    color = "white"
+class Solder extends Player {
+    name = "solder"
+    color = "gray"
+    items = [
+        PlasmaRifle
+    ]
     actions = [
         Move,
+        Pickup,
         Punch,
-        Pickup
+        Shoot
+    ]
+    links = [
+        Rebels.Link(1)
     ]
 }
+Solder.Register()
 
 // create tile //
-
-class Grass extends Tile {
-    color = "green"
-}
-Grass = Grass.Register()
 
 class Floor extends Tile {
     color = "gray"
@@ -190,19 +214,16 @@ Wall.Register()
 
 var world = new Map({name: "MoM"})
 
-world.SetTile(Grass, new Vec2(0,0), new Vec2(9,9))
-world.SetTile(Floor, new Vec2(2,2), new Vec2(7,7))
+world.SetTile(Floor, new Vec2(0,0), new Vec2(9,9))
 
-world.SetStructor(Wall, new Vec2(2,2), new Vec2(7,7))
-world.SetStructor(false, new Vec2(3,3), new Vec2(6,6))
-world.SetStructor(false, new Vec2(4,2), new Vec2(5,7))
-world.SetStructor(false, new Vec2(2,4), new Vec2(7,5))
+world.SetStructor(Wall, new Vec2(0,0), new Vec2(9,9))
+world.SetStructor(false, new Vec2(1,1), new Vec2(8,8))
 
-world.SetItem(Gun, new Vec2(1,8))
-
-var eb = new EdenBlack()
-world.SetPlayer(new EdenWhite({target: eb}), new Vec2(9,0))
-world.SetPlayer(eb, new Vec2(0,9))
+world.SetPlayer(new EdenBlack(), new Vec2(1, 5))
+world.SetPlayer(new Solder(), new Vec2(1, 1))
+world.SetPlayer(new Solder(), new Vec2(1, 8))
+world.SetPlayer(new Solder(), new Vec2(8, 8))
+world.SetPlayer(new Solder(), new Vec2(8, 1))
 
 // render world //
 
