@@ -21,7 +21,7 @@ class Slot {
     }
 
     add(item) {
-        item.player.items[item] = this
+        item.player._items[item] = this
         this.amu += item.size
         this.items.push(item)
     }
@@ -57,9 +57,7 @@ class Slot {
 export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     set actions(actions) {
         for (var i in actions) {
-            var action = new actions[i]({
-                player: this
-            })
+            var action = new actions[i]({player: this})
             if (action.itemType) {
                 if (!(action.itemType in this._item_actions_ids)) {
                     this._item_actions_ids[action.itemType] = {}
@@ -84,6 +82,12 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
     }
 
+    set items(items) {
+        for (var i in items) {
+            new items[i]().Pickup(this)
+        }
+    }
+
     // varibles
 
     _actions = {}
@@ -92,19 +96,18 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     _moves = {}
     _max_moves = {}
     _links = {}
+    _items = {}
 
     color = "blue"
     controller = "robot"
 
-    hp = 20
-    mp = 20
+    hp = 100
+    mp = 100
 
     xp = 0
     lv = 1
 
     gp = 0
-
-    items = {}
     gear = {
         hands: new Slot(2),
         chest: new Slot(1),
@@ -429,9 +432,9 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
     }
 
     Unequip(item) {
-        this.items[item].remove(item)
+        this._items[item].remove(item)
         delete this._item_actions[item.key]
-        delete this.items[item]
+        delete this._items[item]
         this.UpdateHTML()
     }
 

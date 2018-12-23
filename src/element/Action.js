@@ -1,6 +1,8 @@
 import React from "react"
+
 import Vec2 from "../util/Vec2"
 import Controller from "../util/Controller"
+import Value from "../util/Value"
 
 import Base from "../component/Base"
 
@@ -15,12 +17,17 @@ export default class Action extends Base {
         }
     }
 
-    get effects() {
-        return this._effects
+    set cheaks(cheaks) {
+        for (var k in cheaks) {
+            if (cheaks[k] instanceof Value) {
+                cheaks[k].source = this
+            }
+        }
+        this._cheaks = cheaks
     }
 
     _effects = []
-    cheaks = {}
+    _cheaks = {}
     target = {}
 
     // accessors
@@ -46,15 +53,23 @@ export default class Action extends Base {
 
     // functions
 
+    Get(cheak) {
+        if (this._cheaks[cheak] instanceof Value) {
+            return this._cheaks[cheak].Value()
+        } else {
+            return this._cheaks[cheak]
+        }
+    }
+
     Cheak(pos, effects) {
-        if (this.cheaks.range) {
-            if (Math.floor(Vec2.Dist(this.Position(), pos)) > this.cheaks.range) {
+        if (this._cheaks.range) {
+            if (Vec2.Dist(this.Position(), pos) > this.Get("range")) {
                 return false
             }
             // TODO: fix range bugs
         }
-        if (this.cheaks.walkable !== undefined) {
-            if (this.Map().Tile(pos).Walkable() !== this.cheaks.walkable) {
+        if (this._cheaks.walkable !== undefined) {
+            if (this.Map().Tile(pos).Walkable() !== this.Get("walkable")) {
                 return false
             }
         }
@@ -73,9 +88,8 @@ export default class Action extends Base {
 
         var effects = [new this.cost().Setup(this, this.target)]
 
-        for (var i in this.effects) {
-            //effects.push(new this.effects[i]().Setup(this, target))
-            effects.push(this.effects[i])
+        for (var i in this._effects) {
+            effects.push(this._effects[i])
         }
 
         if (!this.Cheak(pos, effects)) {
@@ -99,18 +113,18 @@ export default class Action extends Base {
             return ctx.mousePos
         }
 
-        if (this.cheaks.range) {
+        if (this._cheaks.range) {
             ctx.beginPath()
             ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
             var pos = this.Position()
-            var size = ctx.size * this.cheaks.range * 2
+            var size = ctx.size * this.Get("range") * 2
             ctx.arc((pos.x + .5) * ctx.size, (pos.y + .5) * ctx.size, size / 2, 0, 2 * Math.PI)
             ctx.fill()
         }
 
-        for (var i in this.effects) {
-            this.effects[i].DrawUI(this, ctx, this.Cheak(
-                ctx.mousePos, this.effects
+        for (var i in this._effects) {
+            this._effects[i].DrawUI(this, ctx, this.Cheak(
+                ctx.mousePos, this._effects
             ))
         }
     }
@@ -251,6 +265,7 @@ Action.Effect = class {
     }
 
     SetData(effect) {
+        // set data
         effect.source = this.source
         effect.target = this.target
         effect.skill = this.skill
@@ -258,6 +273,12 @@ Action.Effect = class {
         effect.range = this.range
         effect.area = this.area
         effect.stat = this.stat
+        // source values
+        for (var k in effect) {
+            if (effect[k] instanceof Value) {
+                effect[k].source = this.source
+            }
+        }
     }
 
     Cheak() {
@@ -285,5 +306,27 @@ Action.Effect = class {
 
 Action.Cost = class extends Action.Effect {
     style = costStyle
+}
+
+Action.Item = class extends Value {
+    constructor(name, value) {
+        super()
+        this.name = name
+        this.value = value || 0
+    }
+
+    Constant() {
+        if (this.source.item.states[this.name] instanceof Value) {
+            return this.source.states[this.name].Constant()
+        } else {
+            return true
+        }
+    }
+
+    Value() {
+        return this.Cheak(this.source.item.states[this.name]) + this.value
+    }
+
+    // TODO: value add cheak
 }
 // TODO: balance system

@@ -1,13 +1,17 @@
+import Value from "../util/Value"
 import Rules from "../util/Rules"
 
 let HealthPool = (superclass) => class extends superclass {
     HP(hp, aim) {
         if (hp) {
-            if (typeof hp === 'object') {
-                hp = Math.floor(Math.random() * (hp[1] - hp[0] + 1)) + hp[0]
+            if (hp instanceof Value) {
+                hp = hp.Value()
             }
 
             if (aim !== undefined && this.Dodge) {
+                if (aim instanceof Value) {
+                    aim = aim.Value()
+                }
                 hp = Rules.Dodge(aim, this.Dodge(), hp)
             }
 

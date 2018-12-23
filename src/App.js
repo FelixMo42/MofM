@@ -1,8 +1,11 @@
 import React from "react"
 
 import "./App.css"
+
 import Game from "./tag/Game"
+
 import Vec2 from "./util/Vec2"
+import Value from "./util/Value"
 
 import Structor from "./element/Structor"
 import Item from "./element/Item"
@@ -88,7 +91,7 @@ class Punch extends Action {
     effects = [
         class extends Action.Effect {
             player = {
-                hp: [-10,-5]
+                hp: new Value.Random(-10,-5)
             }
         }
     ]
@@ -97,10 +100,12 @@ Punch.Register()
 
 class Shoot extends Action {
     name = "shoot"
-    skill = Gunmanship
     itemType = "gun"
+
+    skill = Gunmanship
+
     cheaks = {
-        range: 10
+        range: new Action.Item("range")
     }
     cost = class extends Action.Cost {
         moves = {
@@ -110,7 +115,7 @@ class Shoot extends Action {
     effects = [
         class extends Action.Effect {
             player = {
-                hp: [-10,-5]
+                hp: new Action.Item("dmg")
             }
         }
     ]
@@ -137,6 +142,11 @@ class EdensRevolver extends Item {
     slot = "hands"
     name = "Eden Black's Revolver"
     type = "gun"
+    states = {
+        dmg: new Value.Random(-10,-20),
+        aim: 10,
+        range: 5
+    }
 }
 EdensRevolver.Register()
 
@@ -145,6 +155,11 @@ class PlasmaRifle extends Item {
     slot = "hands"
     name = "Plasma Rifle"
     type = "gun"
+    states = {
+        dmg: new Value.Random(-50,-25),
+        aim: 5,
+        range: 0
+    }
 }
 PlasmaRifle.Register()
 
@@ -162,6 +177,8 @@ class EdenBlack extends Player {
     name = "Eden Black"
     controller = "player"
     color = "black"
+    hp = 1000
+    lv = 100
     items = [
         EdensRevolver
     ]
@@ -180,7 +197,7 @@ EdenBlack.Register()
 class Solder extends Player {
     name = "solder"
     color = "gray"
-    items = [
+    equiped = [
         PlasmaRifle
     ]
     actions = [

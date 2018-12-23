@@ -55,7 +55,9 @@ export default class Item extends Base {
     Pickup(player) {
         console.debug(player.name + " picks up " + this.name)
 
-        this.tile.Item(false)
+        if (this.tile) {
+            this.tile.Item(false)
+        }
         this.player = player
 
         this.player.Bonus(this.uq_bonus, true)
