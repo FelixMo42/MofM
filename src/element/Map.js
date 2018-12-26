@@ -40,6 +40,7 @@ export default class Map extends Interface(Base) {
 
     name = "def"
 
+    log = []
     tiles = []
     players = []
 
@@ -142,6 +143,15 @@ export default class Map extends Interface(Base) {
         }
     }
 
+    Log(source, text, color) {
+        this.log.push({
+            text: text,
+            color: color,
+            time: 1,
+            pos: source.Position().Copy()
+        })
+    }
+
     // functions
 
     NextTurn() {
@@ -180,12 +190,27 @@ export default class Map extends Interface(Base) {
         }
 
         Controller.DrawUI(ctx)
+
+        for (var log of this.log) {
+            ctx.fillStyle = log.color || "black"
+            ctx.font = "30px Arial"
+            ctx.fillText(log.text,
+                (log.pos.x + .5) * ctx.size,
+                log.pos.y * ctx.size
+            )
+            log.pos.y -= ctx.dt
+
+            log.time -= ctx.dt
+            if (log.time <= 0) {
+                this.log.splice(this.log.indexOf(log), 1)
+            }
+        }
     }
 
     Render() {
         return (
             <div>
-                { this.players.map((player, key) => player.html) }
+                { /*this.players.map((player, key) => player.html)*/ }
             </div>
         )
     }

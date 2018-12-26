@@ -13,6 +13,10 @@ export default class Vec2 {
         this.y = y
     }
 
+    Copy() {
+        return new Vec2(this.x, this.y)
+    }
+
     static Dist(a, b) {
         return sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
     }

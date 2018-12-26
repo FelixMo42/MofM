@@ -88,6 +88,12 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
         }
     }
 
+    set equiped(equiped) {
+        for (var i in equiped) {
+            new equiped[i]().Pickup(this).Equip()
+        }
+    }
+
     // varibles
 
     _actions = {}
@@ -389,10 +395,15 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             aim = effect.skill.Roll(effect.stat)
         }
         if (effect.hp) {
-            this.HP(effect.hp, aim)
+            this.HP(effect.hp, {
+                aim: aim,
+                stack: effect.source.Player().stack
+            })
         }
         if (effect.mp) {
-            this.MP(effect.mp, aim)
+            this.MP(effect.mp, {
+                aim: aim
+            })
         }
         if (effect.push) {
             this.Position(effect.target.Position())

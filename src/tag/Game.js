@@ -3,6 +3,7 @@ import Vec2 from '../util/Vec2'
 
 export default class Game extends React.Component {
     FPS = 10
+    lastUpdate = Date.now()
 
     constructor(props) {
         super(props)
@@ -16,6 +17,12 @@ export default class Game extends React.Component {
     }
 
     draw() {
+        var now = Date.now()
+        this.graphics.dt = (now - this.lastUpdate) / 1000
+        this.lastUpdate = now
+
+        //console.log(this.graphics.dt)
+
         this.graphics.clearRect(0, 0, this.canvas.width, this.canvas.height)
         this.world.Draw(this.graphics)
     }
