@@ -1,6 +1,7 @@
 import Base from "../component/Base"
+import Interface from "../component/Interface"
 
-export default class Structor extends Base {
+export default class Structor extends Interface(Base) {
     // varibles
 
     color = "red"

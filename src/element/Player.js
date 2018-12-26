@@ -269,26 +269,46 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     Tile(tile) {
         if (tile) {
-            if (this.tile) {
-                this.tile.Player(false)
+            if (this.node) {
+                this.node.tile.Player(false)
+            } else {
+                tile.node.sprite.player = this.sprite
             }
-            this.tile = tile
+            this.node = tile.node
             tile.Player(this)
         }
         return this.tile
     }
 
     Map() {
-        return this.tile.Map()
+        return this.node.map
     }
 
-    Position(pos) {
+    Position(pos, params) {
         if (pos) {
             console.debug(this.name + " moves to " + pos.x + ", " + pos.y)
+
+
+            if (params.stack) {
+                var time = 1
+                this.sprite.LogPosition()
+                params.stack.push((player, ctx) => {
+                    time -= ctx.dt
+                    if (time < 0) {
+                        this.sprite.SetPosition(pos)
+                        return true
+                    } else {
+                        return false
+                    }
+                })
+            } else {
+                this.sprite.SetPosition(pos)
+            }
+
             this.Tile(this.Map().Tile(pos))
         }
 
-        return this.tile.Position()
+        return this.node.pos
     }
 
     Moves(name, amu) {
@@ -406,7 +426,10 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
             })
         }
         if (effect.push) {
-            this.Position(effect.target.Position())
+            this.Position(effect.target.Position(), {
+                aim: aim,
+                stack: effect.source.Player().stack
+            })
             // TODO: make it not teleportation
         }
         if (effect.moves) {
@@ -469,17 +492,21 @@ export default class Player extends Interface(HealthPool(ManaPool(Base))) {
 
     stack = []
 
-    Draw(ctx) {
+    Draw(ctx, position) {
         ctx.beginPath()
         ctx.fillStyle = this.color
         ctx.strokeStyle = "black"
         var pos = this.Position()
-        ctx.arc((pos.x + .5) * ctx.size, (pos.y + .5) * ctx.size, ctx.size / 2 - 3, 0, 2 * Math.PI)
+        ctx.arc(
+            (pos.x + .5) * ctx.size,
+            (pos.y + .5) * ctx.size,
+            ctx.size / 2 - 3, 0, 2 * Math.PI
+        )
         ctx.fill()
         ctx.stroke()
 
         if (this.stack[0]) {
-            if (this.stack[0](this)) {
+            if (this.stack[0](this, ctx)) {
                 this.stack.shift()
             }
         }

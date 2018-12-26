@@ -20,6 +20,10 @@ function cheak(obj, start, end) {
     }
 }
 
+class Node {
+    sprite = {}
+}
+
 export default class Map extends Interface(Base) {
     constructor(params) {
         super(params)
@@ -27,10 +31,9 @@ export default class Map extends Interface(Base) {
         for (var x = 0; x < this.width; x++) {
             this[x] = this[x] || []
             for (var y = 0; y < this.height; y++) {
-                this[x][y] = {
-                    pos: new Vec2(x, y),
-                    map: this
-                }
+                this[x][y] = new Node()
+                this[x][y].pos = new Vec2(x, y)
+                this[x][y].map = this
                 this[x][y].tile = new this.base({node: this[x][y]})
             }
         }
@@ -171,20 +174,21 @@ export default class Map extends Interface(Base) {
     Draw(ctx) {
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
+                //this[x][y].sprite.tile.Draw(ctx)
                 this[x][y].tile.Draw(ctx)
             }
         }
 
         for (x = 0; x < this.width; x++) {
             for (y = 0; y < this.height; y++) {
-                if (this[x][y].structor) {
-                    this[x][y].structor.Draw(ctx)
+                if (this[x][y].sprite.structor) {
+                    this[x][y].sprite.structor.Draw(ctx, new Vec2(x, y))
                 }
-                if (this[x][y].item) {
-                    this[x][y].item.Draw(ctx)
+                if (this[x][y].sprite.item) {
+                    this[x][y].sprite.item.sprite.Draw(ctx, new Vec2(x, y))
                 }
-                if (this[x][y].player) {
-                    this[x][y].player.Draw(ctx)
+                if (this[x][y].sprite.player) {
+                    this[x][y].sprite.player.Draw(ctx, new Vec2(x, y))
                 }
             }
         }
@@ -210,7 +214,7 @@ export default class Map extends Interface(Base) {
     Render() {
         return (
             <div>
-                { /*this.players.map((player, key) => player.html)*/ }
+                {this.players.map((player, key) => player.html)}
             </div>
         )
     }
